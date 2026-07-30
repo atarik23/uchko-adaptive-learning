@@ -1,0 +1,103 @@
+{% load static %}
+{% load uchko_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Uchko — Adaptive Learning{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'learning/css/styles.css' %}">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">U</div>
+      <div>
+        <p class="title">Uchko</p>
+        <p class="subtitle">Adaptive learning demo</p>
+      </div>
+    </div>
+
+    {% block sidebar %}
+      <div class="section">
+        <h3>Account</h3>
+        <p class="muted" style="margin: 0.2rem 0;">User: <b>{{ username }}</b></p>
+        <p class="muted" style="margin: 0.2rem 0;">Student ID: <code>{{ request.session.student_id }}</code></p>
+        <p class="muted" style="margin: 0.2rem 0;">Session ID: <code>{{ request.session.session_id }}</code></p>
+        <form action="{% url 'learning:logout' %}" method="get" style="margin-top: 0.5rem;">
+          <button class="btn btn-block" type="submit">Switch user</button>
+        </form>
+      </div>
+
+      <div class="section">
+        <h3>Session</h3>
+        <form action="{% url 'learning:new_session' %}" method="post">
+          {% csrf_token %}
+          <button class="btn btn-block" type="submit">New session</button>
+        </form>
+      </div>
+
+      <div class="section">
+        <h3>Export</h3>
+        <a class="btn btn-block" href="{% url 'learning:export_session_csv' %}">Download session (CSV)</a>
+      </div>
+
+      <div class="section">
+        <h3>This session</h3>
+        <div class="metric"><span class="label">Solves</span><span class="value">{{ metrics.n_solves }}</span></div>
+        <div class="metric"><span class="label">Accuracy</span><span class="value">{{ metrics.acc|fmt2 }}</span></div>
+        {% if metrics.mean_rt_ms %}
+          <div class="metric"><span class="label">Avg time</span><span class="value">{{ metrics.mean_rt_ms|divide:1000|fmt2 }}s</span></div>
+        {% endif %}
+        <div class="metric"><span class="label">Hints</span><span class="value">{{ metrics.hints }}</span></div>
+        <div class="metric"><span class="label">Explanations</span><span class="value">{{ metrics.expl }}</span></div>
+      </div>
+    {% endblock %}
+  </aside>
+
+  <main class="main">
+    {% block top_header %}
+      <div class="card card-tight">
+        <div style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+          <div>
+            <div class="card-title">Practice session</div>
+            <div class="muted">User <b>{{ username }}</b> · Session <code>{{ session_id }}</code></div>
+            <div class="chips">
+              <span class="chip {{ risk_css }}">Risk: {{ risk_label }}</span>
+              <span class="chip chip-low">Goal: {{ goal_name }}</span>
+              <span class="chip chip-low">Goal mastery: {{ now_m|fmt2 }}/{{ goal_threshold|fmt2 }}</span>
+            </div>
+          </div>
+          <div style="min-width: 260px;">
+            <div class="muted" style="margin-bottom:0.35rem;">This session</div>
+            <div style="display:flex; gap:0.6rem; flex-wrap:wrap;">
+              <span class="chip">Solves: {{ metrics.n_solves }}</span>
+              <span class="chip">Acc: {{ metrics.acc|fmt2 }}</span>
+              <span class="chip">Hints: {{ metrics.hints }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="tabs">
+        <a class="tab {% if active_tab == 'practice' %}active{% endif %}" href="{% url 'learning:practice' %}">Practice</a>
+        <a class="tab {% if active_tab == 'progress' %}active{% endif %}" href="{% url 'learning:progress' %}">Progress</a>
+        <a class="tab {% if active_tab == 'curriculum' %}active{% endif %}" href="{% url 'learning:curriculum' %}">Curriculum</a>
+        <a class="tab {% if active_tab == 'settings' %}active{% endif %}" href="{% url 'learning:settings' %}">Settings / Debug</a>
+      </nav>
+    {% endblock %}
+
+    {% if flash_messages %}
+      <div class="flash-area">
+        {% for fm in flash_messages %}
+          <div class="flash flash-{{ fm.level }}">{{ fm.message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

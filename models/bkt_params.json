@@ -1,0 +1,16 @@
+{
+  "global_params": {
+    "p_init": 0.5959199033389988,
+    "p_transit": 0.23800914531232456,
+    "p_guess": 0.10076399020740526,
+    "p_slip": 0.27021763792868714
+  },
+  "metrics": {
+    "train_nll": 0.6173225092086476,
+    "val_nll": 0.6280946559717498,
+    "n_train": 391,
+    "n_val": 97,
+    "learn_only_first_attempt": true,
+    "n_trials": 400
+  }
+}

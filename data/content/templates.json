@@ -1,0 +1,237 @@
+{
+  "templates": [
+    {
+      "template_id": "ARITH_OOO_E1",
+      "skill_id": "S01_ARITH",
+      "difficulty": 1,
+      "type": "numeric",
+      "prompt_template": "Calculate: {a} + {b} × {c}",
+      "params": {"a": [-9, 9], "b": [-9, 9], "c": [-9, 9]},
+      "answer_expr": "a + b*c"
+    },
+    {
+      "template_id": "ARITH_PAREN_M2",
+      "skill_id": "S01_ARITH",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Calculate: ({a} + {b}) × {c}",
+      "params": {"a": [-12, 12], "b": [-12, 12], "c": [-9, 9]},
+      "answer_expr": "(a+b)*c"
+    },
+
+    {
+      "template_id": "FRAC_ADD_E1",
+      "skill_id": "S02_FRAC",
+      "difficulty": 1,
+      "type": "mcq",
+      "prompt_template": "Compute: {a}/{b} + {c}/{d}",
+      "params": {"a": [1, 9], "b": [2, 9], "c": [1, 9], "d": [2, 9]},
+      "answer_expr": "Fraction(a,b) + Fraction(c,d)",
+      "mcq": {"choices": 4, "distractors": ["add_denominators", "wrong_common_denominator", "add_numerators_only"]}
+    },
+    {
+      "template_id": "RATIO_FIND_X_M2",
+      "skill_id": "S02_FRAC",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "If {a}:{b} = {c}:x, find x.",
+      "params": {"a": [1, 9], "b": [1, 9], "c": [1, 18]},
+      "answer_expr": "Fraction(b*c, a)"
+    },
+
+    {
+      "template_id": "EXP_POW_E1",
+      "skill_id": "S03_EXP",
+      "difficulty": 1,
+      "type": "numeric",
+      "prompt_template": "Compute: {a}^{n}",
+      "params": {"a": [2, 9], "n": [2, 4]},
+      "answer_expr": "a**n"
+    },
+    {
+      "template_id": "RAD_SQRT_M2",
+      "skill_id": "S03_EXP",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Simplify: √{k}",
+      "params": {"k": [4, 196]},
+      "answer_expr": "isqrt(k) if is_square(k) else sqrt(k)"
+    },
+
+    {
+      "template_id": "LIN_EXPR_DISTR_E1",
+      "skill_id": "S04_LIN_EXPR",
+      "difficulty": 1,
+      "type": "numeric",
+      "prompt_template": "Let x = {x}. Evaluate: {a}(x + {b})",
+      "params": {"a": [-6, 6], "b": [-9, 9], "x": [-9, 9]},
+      "answer_expr": "a*(x+b)"
+    },
+    {
+      "template_id": "LIN_EXPR_COMB_M2",
+      "skill_id": "S04_LIN_EXPR",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Let x = {x}. Evaluate: {a}x + {b}x + {c}",
+      "params": {"a": [-9, 9], "b": [-9, 9], "c": [-12, 12], "x": [-9, 9]},
+      "answer_expr": "(a+b)*x + c"
+    },
+
+    {
+      "template_id": "LIN_EQ_STD_E1",
+      "skill_id": "S05_LIN_EQ",
+      "difficulty": 1,
+      "type": "numeric",
+      "prompt_template": "Solve for x: {a}x + {b} = {c}",
+      "params": {"a": [1, 9], "b": [-12, 12], "c": [-12, 12]},
+      "answer_expr": "Fraction(c-b, a)"
+    },
+    {
+      "template_id": "LIN_EQ_NEG_M2",
+      "skill_id": "S05_LIN_EQ",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Solve for x: {a}x - {b} = {c}",
+      "params": {"a": [2, 12], "b": [1, 12], "c": [-20, 20]},
+      "answer_expr": "Fraction(c+b, a)"
+    },
+
+    {
+      "template_id": "LIN_INEQ_STD_E1",
+      "skill_id": "S06_LIN_INEQ",
+      "difficulty": 1,
+      "type": "mcq",
+      "prompt_template": "Solve: {a}x + {b} > {c}",
+      "params": {"a": [1, 9], "b": [-12, 12], "c": [-12, 12]},
+      "answer_expr": "Fraction(c-b, a)",
+      "mcq": {"choices": 4, "distractors": ["flip_sign_error", "subtract_error", "divide_error"]}
+    },
+    {
+      "template_id": "LIN_INEQ_NEGCOEF_M2",
+      "skill_id": "S06_LIN_INEQ",
+      "difficulty": 2,
+      "type": "mcq",
+      "prompt_template": "Solve: -{a}x + {b} ≤ {c}",
+      "params": {"a": [1, 9], "b": [-12, 12], "c": [-12, 12]},
+      "answer_expr": "Fraction(b-c, a)",
+      "mcq": {"choices": 4, "distractors": ["forgot_flip", "add_error", "divide_error"]}
+    },
+
+    {
+      "template_id": "GRAPH_QUADRANT_E1",
+      "skill_id": "S07_GRAPH",
+      "difficulty": 1,
+      "type": "mcq",
+      "prompt_template": "Which quadrant contains the point ({x}, {y})?",
+      "params": {"x": [-9, 9], "y": [-9, 9]},
+      "answer_expr": "quadrant(x,y)",
+      "mcq": {"choices": 4, "distractors": ["swap_axes", "sign_error", "origin_confusion"]}
+    },
+    {
+      "template_id": "GRAPH_SLOPE_FROM_POINTS_M2",
+      "skill_id": "S07_GRAPH",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Find the slope of the line through ({x1},{y1}) and ({x2},{y2}).",
+      "params": {"x1": [-9, 9], "y1": [-9, 9], "x2": [-9, 9], "y2": [-9, 9]},
+      "answer_expr": "Fraction(y2-y1, x2-x1)"
+    },
+
+    {
+      "template_id": "LIN_FUNC_SLOPEINT_E1",
+      "skill_id": "S08_LIN_FUNC",
+      "difficulty": 1,
+      "type": "numeric",
+      "prompt_template": "For y = {m}x + {b}, what is y when x = {x}?",
+      "params": {"m": [-6, 6], "b": [-12, 12], "x": [-6, 6]},
+      "answer_expr": "m*x + b"
+    },
+    {
+      "template_id": "LIN_FUNC_FIND_M_M2",
+      "skill_id": "S08_LIN_FUNC",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "A line passes through ({x1},{y1}) and ({x2},{y2}). Find its slope m.",
+      "params": {"x1": [-9, 9], "y1": [-9, 9], "x2": [-9, 9], "y2": [-9, 9]},
+      "answer_expr": "Fraction(y2-y1, x2-x1)"
+    },
+
+    {
+      "template_id": "SYSTEMS_SUB_E1",
+      "skill_id": "S09_SYSTEMS",
+      "difficulty": 1,
+      "type": "numeric",
+      "prompt_template": "Solve the system: y = {a}x + {b} and {c}x + y = {d}. Find x.",
+      "params": {"a": [-6, 6], "b": [-12, 12], "c": [1, 9], "d": [-20, 20]},
+      "answer_expr": "Fraction(d-b, a+c)"
+    },
+    {
+      "template_id": "SYSTEMS_ELIM_M2",
+      "skill_id": "S09_SYSTEMS",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Solve: {a}x + y = {c} and {b}x - y = {d}. Find x.",
+      "params": {"a": [1, 9], "b": [1, 9], "c": [-20, 20], "d": [-20, 20]},
+      "answer_expr": "Fraction(c+d, a+b)"
+    },
+
+    {
+      "template_id": "QUAD_FACT_E1",
+      "skill_id": "S10_QUAD_EXPR",
+      "difficulty": 1,
+      "type": "mcq",
+      "prompt_template": "Factor: x^2 + {b}x + {c}",
+      "params": {"b": [-10, 10], "c": [-25, 25]},
+      "answer_expr": "factor_pair(b,c)",
+      "mcq": {"choices": 4, "distractors": ["sign_error", "wrong_pair", "swap_terms"]}
+    },
+    {
+      "template_id": "QUAD_EXPAND_M2",
+      "skill_id": "S10_QUAD_EXPR",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Let x = {x}. Evaluate: (x + {p})(x + {q}).",
+      "params": {"p": [-9, 9], "q": [-9, 9], "x": [-6, 6]},
+      "answer_expr": "(x+p)*(x+q)"
+    },
+
+    {
+      "template_id": "QUAD_SOLVE_FACT_E1",
+      "skill_id": "S11_QUAD_EQ",
+      "difficulty": 1,
+      "type": "mcq",
+      "prompt_template": "Solve: x^2 + {b}x + {c} = 0. Choose a solution.",
+      "params": {"b": [-10, 10], "c": [-25, 25]},
+      "answer_expr": "one_root_from_factor(b,c)",
+      "mcq": {"choices": 4, "distractors": ["sign_error", "wrong_pair", "random_integer"]}
+    },
+    {
+      "template_id": "QUAD_FORMULA_M2",
+      "skill_id": "S11_QUAD_EQ",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "Solve: x^2 + {b}x + {c} = 0. Give the smaller root.",
+      "params": {"b": [-10, 10], "c": [-25, 25]},
+      "answer_expr": "smaller_root_quadratic(1,b,c)"
+    },
+
+    {
+      "template_id": "STATS_MEAN_E1",
+      "skill_id": "S12_STATS",
+      "difficulty": 1,
+      "type": "numeric",
+      "prompt_template": "Find the mean of: {a}, {b}, {c}, {d}.",
+      "params": {"a": [0, 20], "b": [0, 20], "c": [0, 20], "d": [0, 20]},
+      "answer_expr": "Fraction(a+b+c+d, 4)"
+    },
+    {
+      "template_id": "PROB_SIMPLE_M2",
+      "skill_id": "S12_STATS",
+      "difficulty": 2,
+      "type": "numeric",
+      "prompt_template": "A bag has {r} red and {b} blue balls. What is the probability of drawing a red ball?",
+      "params": {"r": [1, 9], "b": [1, 9]},
+      "answer_expr": "Fraction(r, r+b)"
+    }
+  ]
+}

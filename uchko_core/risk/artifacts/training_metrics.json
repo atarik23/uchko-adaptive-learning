@@ -1,0 +1,25 @@
+{
+  "model_type": "HistGradientBoostingClassifier",
+  "roc_auc": 0.7146737299847085,
+  "avg_precision": 0.7321132792495681,
+  "threshold_label": 0.65,
+  "n_samples": 41656,
+  "n_pos": 22953,
+  "feature_order": [
+    "n_solves",
+    "acc",
+    "recent_acc_10",
+    "mean_rt_ms",
+    "p90_rt_ms",
+    "wrong_streak_max",
+    "hints_per_solve",
+    "explanations_per_solve"
+  ],
+  "rt_cap_sec": 60.0,
+  "gbm_params": {
+    "max_iter": 400,
+    "learning_rate": 0.05,
+    "max_depth": 3,
+    "min_samples_leaf": 40
+  }
+}

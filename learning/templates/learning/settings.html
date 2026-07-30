@@ -1,0 +1,185 @@
+{% extends "learning/base.html" %}
+{% load uchko_extras %}
+
+{% block title %}Uchko — Settings / Debug{% endblock %}
+
+{% block content %}
+  <h2>Settings / Debug</h2>
+
+  <h3>User session history</h3>
+
+  {% if history_rows %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Session ID</th>
+            <th>Ended</th>
+            <th>Solves</th>
+            <th>Accuracy</th>
+            <th>Risk (raw)</th>
+            <th>Risk level</th>
+            <th>Goal mastery</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in history_rows %}
+            <tr>
+              <td><code>{{ r.session_id }}</code></td>
+              <td class="muted">{{ r.session_end_ts|from_unix }}</td>
+              <td>{{ r.n_solves }}</td>
+              <td>{{ r.acc|fmt2 }}</td>
+              <td>{{ r.risk_raw|fmt2 }}</td>
+              <td>{{ r.risk_level }}</td>
+              <td>{% if r.mastery_goal is not None %}{{ r.mastery_goal|fmt2 }}{% else %}—{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row" style="margin-top: 1rem;">
+      <div class="card">
+        <div class="card-title">What to work on next</div>
+        {% if weak_rows %}
+          <ul style="margin: 0.4rem 0 0 1.2rem;">
+            {% for w in weak_rows %}
+              <li><b>{{ w.name }}</b> (<code>{{ w.id }}</code>) — mastery {{ w.mastery|fmt2 }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="muted">No weak skill summary available yet.</div>
+        {% endif %}
+      </div>
+      <div class="card">
+        <div class="card-title">Strong skills</div>
+        {% if strong_rows %}
+          <ul style="margin: 0.4rem 0 0 1.2rem;">
+            {% for s in strong_rows %}
+              <li><b>{{ s.name }}</b> (<code>{{ s.id }}</code>) — mastery {{ s.mastery|fmt2 }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="muted">No strong skill summary available yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="flash flash-info">No previous sessions for this user.</div>
+  {% endif %}
+
+  <div class="card" style="margin-top: 1rem;">
+    <div class="card-title">Preferences</div>
+    <div class="muted">
+      Adaptive mode is controlled in the Practice tab only.
+    </div>
+    <div style="margin-top: 0.5rem;">
+      <div>Adaptive mode is currently: <b>{{ adaptive_mode }}</b></div>
+      <div>Manual skill: <b>{{ manual_skill_label }}</b></div>
+      <div>Manual difficulty: <b>{{ manual_difficulty }}</b></div>
+    </div>
+  </div>
+
+  <details>
+    <summary>Risk details &amp; model status</summary>
+    <div style="margin-top: 0.6rem;">
+      <div>Risk source: <b>{{ risk_source }}</b></div>
+      <div>Risk raw: <b>{{ risk_raw|fmt3 }}</b></div>
+      <div>Risk used: <b>{% if not risk_ready %}warming up{% else %}{{ risk_score_used|fmt3 }}{% endif %}</b></div>
+      {% if guard_reason %}
+        <div class="flash flash-warning" style="margin-top: 0.4rem;">{{ guard_reason }}</div>
+      {% endif %}
+      <div style="margin-top: 0.6rem;">
+        <div>Model loaded: <b>{{ model_info.loaded }}</b></div>
+        {% if model_info.loaded %}
+          <div>Model type: <code>{{ model_info.type }}</code></div>
+          <div>#features: <b>{{ model_info.n_features }}</b></div>
+        {% endif %}
+        <div style="margin-top: 0.5rem;">Risk features:</div>
+        <pre>{{ rf_dict|pprint }}</pre>
+      </div>
+    </div>
+  </details>
+
+  <details>
+    <summary>Event logs (this session)</summary>
+    <div style="margin-top: 0.6rem;">
+      {% if session_events %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>timestamp</th>
+                <th>event_type</th>
+                <th>skill_id</th>
+                <th>question_id</th>
+                <th>difficulty</th>
+                <th>correct</th>
+                <th>response_time_ms</th>
+                <th>attempt</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in session_events %}
+                <tr>
+                  <td class="muted">{{ e.timestamp|from_unix }}</td>
+                  <td>{{ e.event_type }}</td>
+                  <td><code>{{ e.skill_id }}</code></td>
+                  <td><code>{{ e.question_id }}</code></td>
+                  <td>{{ e.difficulty }}</td>
+                  <td>{{ e.correct }}</td>
+                  <td>{{ e.response_time_ms }}</td>
+                  <td>{{ e.attempt_number }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="muted">No events in this session yet.</div>
+      {% endif %}
+    </div>
+  </details>
+
+  <details>
+    <summary>Event logs (all-time)</summary>
+    <div style="margin-top: 0.6rem;">
+      {% if all_events %}
+        <div class="table-wrap" style="max-height: 380px; overflow: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>timestamp</th>
+                <th>session_id</th>
+                <th>event_type</th>
+                <th>skill_id</th>
+                <th>question_id</th>
+                <th>difficulty</th>
+                <th>correct</th>
+                <th>response_time_ms</th>
+                <th>attempt</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for e in all_events %}
+                <tr>
+                  <td class="muted">{{ e.timestamp|from_unix }}</td>
+                  <td><code>{{ e.session_id }}</code></td>
+                  <td>{{ e.event_type }}</td>
+                  <td><code>{{ e.skill_id }}</code></td>
+                  <td><code>{{ e.question_id }}</code></td>
+                  <td>{{ e.difficulty }}</td>
+                  <td>{{ e.correct }}</td>
+                  <td>{{ e.response_time_ms }}</td>
+                  <td>{{ e.attempt_number }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="muted">No events yet.</div>
+      {% endif %}
+    </div>
+  </details>
+{% endblock %}

@@ -1,0 +1,17 @@
+{
+  "version": "v1",
+  "skills": [
+    { "skill_id": "S01_ARITH", "name": "Arithmetic & Integers", "prerequisites": [], "difficulty": 1 },
+    { "skill_id": "S02_FRAC", "name": "Fractions & Ratios", "prerequisites": ["S01_ARITH"], "difficulty": 2 },
+    { "skill_id": "S03_EXP", "name": "Exponents & Radicals", "prerequisites": ["S01_ARITH"], "difficulty": 2 },
+    { "skill_id": "S04_LIN_EXPR", "name": "Linear Expressions", "prerequisites": ["S01_ARITH", "S02_FRAC"], "difficulty": 2 },
+    { "skill_id": "S05_LIN_EQ", "name": "Linear Equations", "prerequisites": ["S04_LIN_EXPR"], "difficulty": 3 },
+    { "skill_id": "S06_LIN_INEQ", "name": "Linear Inequalities", "prerequisites": ["S05_LIN_EQ"], "difficulty": 3 },
+    { "skill_id": "S07_GRAPH", "name": "Coordinate Plane & Graphing", "prerequisites": ["S01_ARITH"], "difficulty": 2 },
+    { "skill_id": "S08_LIN_FUNC", "name": "Linear Functions", "prerequisites": ["S05_LIN_EQ", "S07_GRAPH"], "difficulty": 3 },
+    { "skill_id": "S09_SYSTEMS", "name": "Systems of Linear Equations", "prerequisites": ["S05_LIN_EQ", "S08_LIN_FUNC"], "difficulty": 4 },
+    { "skill_id": "S10_QUAD_EXPR", "name": "Quadratic Expressions", "prerequisites": ["S03_EXP", "S04_LIN_EXPR"], "difficulty": 4 },
+    { "skill_id": "S11_QUAD_EQ", "name": "Quadratic Equations", "prerequisites": ["S10_QUAD_EXPR"], "difficulty": 4 },
+    { "skill_id": "S12_STATS", "name": "Data, Probability & Statistics", "prerequisites": ["S01_ARITH"], "difficulty": 2 }
+  ]
+}
