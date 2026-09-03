@@ -4,41 +4,108 @@
 {% block title %}Uchko — Curriculum{% endblock %}
 
 {% block content %}
-  <h2>Curriculum</h2>
+<div class="curriculum-page">
 
-  <div class="card">
-    <div class="card-title">Curriculum map</div>
-    <div class="muted">Prerequisites + mastery overlay.</div>
-    <div style="margin-top: 0.8rem; text-align: center;">
-      <img src="{% url 'learning:curriculum_graph' %}?t={{ session_id }}" alt="Curriculum graph"
-           style="max-width: 100%; height: auto; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06);">
-    </div>
-  </div>
+    <!-- Page heading -->
+    <section class="page-heading">
+        <div>
+            <h2>Curriculum</h2>
+            <p class="muted">
+                Explore the learning path, skill dependencies, and your current mastery.
+            </p>
+        </div>
 
-  <h3>Prerequisites browser</h3>
+        <a href="{% url 'learning:practice' %}" class="btn btn-primary">
+            Continue practice
+        </a>
+    </section>
 
-  <form action="{% url 'learning:curriculum' %}" method="get" class="card card-tight">
-    <label for="skill">Select skill</label>
-    <div class="form-row">
-      <select id="skill" name="skill" class="grow-2" onchange="this.form.submit()">
-        {% for opt in skill_options %}
-          <option value="{{ opt.id }}" {% if opt.id == selected_skill_id %}selected{% endif %}>{{ opt.label }}</option>
-        {% endfor %}
-      </select>
-      <button type="submit" class="btn">Go</button>
-    </div>
-  </form>
+    <!-- Curriculum graph -->
+    <section class="card curriculum-map-card">
+        <div class="card-title">Curriculum map</div>
 
-  <div class="card">
-    <div class="card-title">Prerequisites for {{ selected_skill_name }}</div>
-    {% if prereq_rows %}
-      <ul style="margin: 0.4rem 0 0 1.2rem; padding: 0;">
-        {% for p in prereq_rows %}
-          <li>{{ p.name }} (<code>{{ p.id }}</code>) — mastery {{ p.mastery|fmt2 }}</li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <div class="muted">No prerequisites for this skill.</div>
-    {% endif %}
-  </div>
+        <p class="muted">
+            The map shows prerequisite relationships between skills, together with the current mastery overlay.
+        </p>
+
+        <div class="curriculum-graph-wrap">
+            <img src="{% url 'learning:curriculum_graph' %}?t={{ session_id }}"
+                 alt="Curriculum graph showing skills and prerequisite relationships"
+                 class="curriculum-graph">
+        </div>
+    </section>
+
+    <!-- Skill selection and prerequisite information -->
+    <section class="row curriculum-details">
+
+        <div>
+            <div class="card card-tight">
+                <div class="card-title">Explore a skill</div>
+
+                <form action="{% url 'learning:curriculum' %}" method="get">
+                    <label for="skill">Select a skill</label>
+
+                    <div class="form-row">
+                        <select id="skill"
+                                name="skill"
+                                class="grow-2"
+                                onchange="this.form.submit()">
+                            {% for opt in skill_options %}
+                                <option value="{{ opt.id }}"
+                                    {% if opt.id == selected_skill_id %}selected{% endif %}>
+                                    {{ opt.label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <button type="submit" class="btn">
+                            Show
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    Prerequisites for {{ selected_skill_name }}
+                </div>
+
+                <div class="muted" style="margin-bottom: 0.7rem;">
+                    These skills are recommended before progressing to this topic.
+                </div>
+
+                {% if prereq_rows %}
+                    <div class="prerequisite-list">
+                        {% for p in prereq_rows %}
+                            <div class="prerequisite-item">
+                                <div>
+                                    <div class="prerequisite-name">
+                                        {{ p.name }}
+                                    </div>
+
+                                    <div class="muted">
+                                        <code>{{ p.id }}</code>
+                                    </div>
+                                </div>
+
+                                <div class="prerequisite-mastery">
+                                    <span class="muted">Mastery</span>
+                                    <b>{{ p.mastery|fmt2 }}</b>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="flash flash-info">
+                        No prerequisites are required for this skill. You can begin practicing it directly.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </section>
+
+</div>
 {% endblock %}
