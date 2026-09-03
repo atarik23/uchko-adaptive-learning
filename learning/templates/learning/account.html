@@ -2,58 +2,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Uchko — Sign in</title>
-  <link rel="stylesheet" href="{% static 'learning/css/styles.css' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Uchko — Welcome</title>
+
+    <link rel="stylesheet" href="{% static 'learning/css/styles.css' %}">
 </head>
-<body>
-<div class="account-wrap">
-  <div class="brand" style="margin-bottom: 1.5rem;">
-    <div class="logo">U</div>
-    <div>
-      <p class="title">Uchko</p>
-      <p class="subtitle">Adaptive learning demo</p>
-    </div>
-  </div>
 
-  {% if flash_messages %}
-    <div class="flash-area">
-      {% for fm in flash_messages %}
-        <div class="flash flash-{{ fm.level }}">{{ fm.message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
+<body class="account-page">
+    <main class="account-wrap">
 
-  <div class="card">
-    <div class="card-title">Create new user</div>
-    <form action="{% url 'learning:create_user' %}" method="post">
-      {% csrf_token %}
-      <label for="new_username">Username</label>
-      <input type="text" id="new_username" name="new_username" placeholder="e.g. tarik" autofocus>
-      <div style="margin-top: 0.7rem;">
-        <button class="btn btn-primary" type="submit">Create / Use</button>
-      </div>
-    </form>
-  </div>
+        <!-- Product identity -->
+        <section class="account-hero">
+            <div class="brand">
+                <div class="logo">U</div>
 
-  {% if users %}
-    <div class="card">
-      <div class="card-title">Or pick existing user</div>
-      <form action="{% url 'learning:select_user' %}" method="post">
-        {% csrf_token %}
-        <label for="username">User</label>
-        <select id="username" name="username">
-          {% for u in users %}
-            <option value="{{ u }}">{{ u }}</option>
-          {% endfor %}
-        </select>
-        <div style="margin-top: 0.7rem;">
-          <button class="btn" type="submit">Continue</button>
-        </div>
-      </form>
-    </div>
-  {% endif %}
-</div>
+                <div>
+                    <p class="title">Uchko</p>
+                    <p class="subtitle">
+                        An adaptive learning workspace that adjusts practice to your progress.
+                    </p>
+                </div>
+            </div>
+
+            <p class="account-intro">
+                Create a learner profile to start a new session, or choose an existing profile to continue.
+            </p>
+        </section>
+
+        <!-- Backend flash messages -->
+        {% if flash_messages %}
+            <section class="flash-area" aria-live="polite">
+                {% for fm in flash_messages %}
+                    <div class="flash flash-{{ fm.level }}">
+                        {{ fm.message }}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <!-- New learner form -->
+        <section class="card account-card">
+            <div class="card-title">Start learning</div>
+
+            <p class="muted account-card-description">
+                Create a username for a new learner profile. Your practice session and learning progress will be linked to this name.
+            </p>
+
+            <form action="{% url 'learning:create_user' %}" method="post">
+                {% csrf_token %}
+
+                <label for="new_username">Username</label>
+
+                <input type="text"
+                       id="new_username"
+                       name="new_username"
+                       placeholder="For example: tarik"
+                       autocomplete="username"
+                       autofocus
+                       required>
+
+                <div class="account-actions">
+                    <button class="btn btn-primary" type="submit">
+                        Create profile and continue
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Existing learner form -->
+        {% if users %}
+            <section class="card account-card">
+                <div class="card-title">Continue learning</div>
+
+                <p class="muted account-card-description">
+                    Select a saved learner profile to continue an earlier learning session.
+                </p>
+
+                <form action="{% url 'learning:select_user' %}" method="post">
+                    {% csrf_token %}
+
+                    <label for="username">Saved learner</label>
+
+                    <select id="username" name="username">
+                        {% for u in users %}
+                            <option value="{{ u }}">{{ u }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="account-actions">
+                        <button class="btn" type="submit">
+                            Continue as selected learner
+                        </button>
+                    </div>
+                </form>
+            </section>
+        {% endif %}
+
+        <p class="account-footer-text">
+            Your learning activity is used to adapt future question selection, difficulty, and skill recommendations.
+        </p>
+
+    </main>
 </body>
 </html>
