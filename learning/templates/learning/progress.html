@@ -4,67 +4,187 @@
 {% block title %}Uchko — Progress{% endblock %}
 
 {% block content %}
-  <h2>Progress</h2>
+<div class="progress-page">
 
-  <div class="row">
-    <div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Skill ID</th>
-              <th>Skill</th>
-              <th>Mastery</th>
-              <th>Prerequisites</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for r in mastery_rows %}
-              <tr>
-                <td><code>{{ r.skill_id }}</code></td>
-                <td>{{ r.skill }}</td>
-                <td>
-                  <div class="bar-row">
-                    <span class="pct">{{ r.mastery|fmt2 }}</span>
-                    <div class="progress-bar" style="flex:1;"><span style="width: {{ r.mastery|mul:100|fmt2 }}%;"></span></div>
-                  </div>
-                </td>
-                <td class="muted">{{ r.prerequisites|default:"—" }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <!-- Page heading -->
+    <section class="page-heading">
+        <div>
+            <h2>Learning progress</h2>
+            <p class="muted">
+                Review your current skill mastery, session activity, and risk status.
+            </p>
+        </div>
 
-    <div>
-      <div class="card card-tight">
-        <div class="card-title">Session stats</div>
-        <div class="metric"><span class="label">Events</span><span class="value">{{ metrics.n_events }}</span></div>
-        <div class="metric"><span class="label">Solves</span><span class="value">{{ metrics.n_solves }}</span></div>
-        <div class="metric"><span class="label">Accuracy</span><span class="value">{{ metrics.acc|fmt2 }}</span></div>
-        {% if avg_rt_seconds is not None %}
-          <div class="metric"><span class="label">Avg response time</span><span class="value">{{ avg_rt_seconds|fmt2 }}s</span></div>
-        {% endif %}
-        <div class="metric"><span class="label">Hints</span><span class="value">{{ metrics.hints }}</span></div>
-        <div class="metric"><span class="label">Explanations</span><span class="value">{{ metrics.expl }}</span></div>
-      </div>
+        <a href="{% url 'learning:practice' %}" class="btn btn-primary">
+            Continue practice
+        </a>
+    </section>
 
-      <div class="card card-tight">
-        <div class="card-title">Risk</div>
-        {% if not risk_ready %}
-          <div class="flash flash-info">Warming up (need {{ min_solves_for_risk }} solves). Current: {{ n_solves }}</div>
-        {% else %}
-          <div class="metric">
-            <span class="label">Risk (smoothed)</span>
-            <span class="value">{{ risk_score_used|fmt2 }}</span>
-          </div>
-          <div class="muted">Level: {{ risk_cat|upper }} · Source: {{ risk_source }}</div>
-          {% if guard_reason %}
-            <div class="flash flash-warning" style="margin-top: 0.5rem;">{{ guard_reason }}</div>
-          {% endif %}
-        {% endif %}
-      </div>
-    </div>
-  </div>
+    <!-- High-level session metrics -->
+    <section class="row-3 progress-summary">
+        <div class="card card-tight">
+            <div class="muted">Questions solved</div>
+            <div class="summary-value">{{ metrics.n_solves }}</div>
+            <div class="muted">During this session</div>
+        </div>
+
+        <div class="card card-tight">
+            <div class="muted">Accuracy</div>
+            <div class="summary-value">{{ metrics.acc|fmt2 }}</div>
+            <div class="muted">Correct-answer rate</div>
+        </div>
+
+        <div class="card card-tight">
+            <div class="muted">Average response time</div>
+            <div class="summary-value">
+                {% if avg_rt_seconds is not None %}
+                    {{ avg_rt_seconds|fmt2 }}s
+                {% else %}
+                    —
+                {% endif %}
+            </div>
+            <div class="muted">Across submitted answers</div>
+        </div>
+    </section>
+
+    <!-- Skill mastery and side information -->
+    <section class="row">
+
+        <!-- Mastery table -->
+        <div>
+            <div class="card">
+                <div class="card-title">Skill mastery</div>
+
+                <div class="muted" style="margin-bottom: 0.9rem;">
+                    Each bar represents your estimated mastery for that skill.
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Skill ID</th>
+                                <th>Skill</th>
+                                <th>Mastery</th>
+                                <th>Prerequisites</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for r in mastery_rows %}
+                                <tr>
+                                    <td>
+                                        <code>{{ r.skill_id }}</code>
+                                    </td>
+
+                                    <td>{{ r.skill }}</td>
+
+                                    <td>
+                                        <div class="bar-row">
+                                            <span class="pct">
+                                                {{ r.mastery|fmt2 }}
+                                            </span>
+
+                                            <div class="progress-bar" style="flex: 1;">
+                                                <span style="width: {{ r.mastery|mul:100|fmt2 }}%;"></span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td class="muted">
+                                        {{ r.prerequisites|default:"—" }}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="muted">
+                                        No mastery data is available yet. Complete practice questions to begin tracking progress.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session and risk cards -->
+        <aside>
+
+            <div class="card card-tight">
+                <div class="card-title">Session statistics</div>
+
+                <div class="metric">
+                    <span class="label">Events</span>
+                    <span class="value">{{ metrics.n_events }}</span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">Solves</span>
+                    <span class="value">{{ metrics.n_solves }}</span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">Accuracy</span>
+                    <span class="value">{{ metrics.acc|fmt2 }}</span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">Average response time</span>
+                    <span class="value">
+                        {% if avg_rt_seconds is not None %}
+                            {{ avg_rt_seconds|fmt2 }}s
+                        {% else %}
+                            —
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">Hints requested</span>
+                    <span class="value">{{ metrics.hints }}</span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">Explanations requested</span>
+                    <span class="value">{{ metrics.expl }}</span>
+                </div>
+            </div>
+
+            <div class="card card-tight">
+                <div class="card-title">Learning risk</div>
+
+                {% if not risk_ready %}
+                    <div class="flash flash-info">
+                        <b>Warming up.</b><br>
+                        The risk model needs {{ min_solves_for_risk }} completed solves.
+
+                        <div style="margin-top: 0.35rem;">
+                            Current completed solves: <b>{{ n_solves }}</b>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div class="metric">
+                        <span class="label">Smoothed risk score</span>
+                        <span class="value">{{ risk_score_used|fmt2 }}</span>
+                    </div>
+
+                    <div class="muted" style="margin-top: 0.45rem;">
+                        Level: <b>{{ risk_cat|upper }}</b><br>
+                        Source: {{ risk_source }}
+                    </div>
+
+                    {% if guard_reason %}
+                        <div class="flash flash-warning" style="margin-top: 0.7rem;">
+                            {{ guard_reason }}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+        </aside>
+    </section>
+
+</div>
 {% endblock %}

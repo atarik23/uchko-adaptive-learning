@@ -247,3 +247,250 @@ pre { background: rgba(0,0,0,0.04); padding: 0.7rem; border-radius: 8px; overflo
 
 .toggle { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; }
 .toggle input { transform: scale(1.1); }
+
+.page-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.page-heading h2 {
+    margin: 0 0 0.3rem;
+}
+
+.progress-summary {
+    margin-bottom: 1.25rem;
+}
+
+.summary-value {
+    margin: 0.35rem 0;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.progress-page aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (max-width: 760px) {
+    .page-heading {
+        flex-direction: column;
+    }
+
+    .page-heading .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+.curriculum-map-card {
+    margin-bottom: 1.25rem;
+}
+
+.curriculum-graph-wrap {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+}
+
+.curriculum-graph {
+    display: block;
+    width: 100%;
+    max-width: 1100px;
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.curriculum-details {
+    align-items: start;
+}
+
+.prerequisite-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.prerequisite-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+
+.prerequisite-name {
+    font-weight: 600;
+}
+
+.prerequisite-mastery {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+    .prerequisite-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .prerequisite-mastery {
+        align-items: flex-start;
+    }
+}
+.account-page {
+    min-height: 100vh;
+}
+
+.account-hero {
+    margin-bottom: 1.25rem;
+}
+
+.account-intro {
+    margin: 1rem 0 0;
+    color: var(--muted, #667085);
+    line-height: 1.55;
+}
+
+.account-card {
+    margin-bottom: 1rem;
+}
+
+.account-card-description {
+    margin: 0.35rem 0 1rem;
+    line-height: 1.5;
+}
+
+.account-actions {
+    margin-top: 0.85rem;
+}
+
+.account-footer-text {
+    margin: 1.25rem 0 0;
+    color: var(--muted, #667085);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+    .account-wrap {
+        padding: 1.25rem;
+    }
+
+    .account-actions .btn {
+        width: 100%;
+    }
+}
+.settings-preferences-card {
+    margin-bottom: 1.25rem;
+}
+
+.settings-card-description {
+    margin: 0.35rem 0 1rem;
+    line-height: 1.5;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.8rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+
+.settings-skill-summary {
+    margin-top: 1rem;
+}
+
+.skill-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.skill-summary-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+}
+
+.skill-summary-mastery {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    white-space: nowrap;
+}
+
+.settings-debug-section {
+    margin-top: 1.75rem;
+}
+
+.settings-debug-section h3 {
+    margin-bottom: 0.35rem;
+}
+
+.settings-details {
+    margin-top: 0.9rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.settings-details summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.settings-details-content {
+    margin-top: 1rem;
+}
+
+.settings-model-status {
+    margin-top: 0.85rem;
+}
+
+.settings-pre-block {
+    margin-top: 0.9rem;
+}
+
+.settings-pre-block pre {
+    max-height: 280px;
+    margin: 0.45rem 0 0;
+    padding: 0.85rem;
+    overflow: auto;
+    border-radius: 8px;
+}
+
+.settings-all-events-table {
+    max-height: 380px;
+    overflow: auto;
+}
+
+@media (max-width: 760px) {
+    .skill-summary-item {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .skill-summary-mastery {
+        align-items: flex-start;
+    }
+}
