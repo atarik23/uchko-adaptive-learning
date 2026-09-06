@@ -325,6 +325,14 @@ class KnowledgeComponent(models.Model):
 
 Ne importovati sada postojeće matematičke skillove ako to komplikuje rad. Bitno je napraviti generičku strukturu i testne instance.
 
+- [x] Dodan generički KnowledgeComponent model.
+- [x] Komponenta pripada Course modelu.
+- [x] `external_id` je unique unutar coursea.
+- [x] Podržana je parent/child hijerarhija.
+- [x] Parent mora pripadati istom courseu.
+- [x] Podržan je fleksibilni metadata JSON.
+- [x] Django admin prikazuje komponente.
+
 ## 9. Napraviti StudentKnowledgeState model
 
 Potrebna je generička tabela u kojoj će se kasnije čuvati procijenjeno znanje studenta, neovisno o vrsti modela.
