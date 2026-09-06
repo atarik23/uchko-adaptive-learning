@@ -277,6 +277,14 @@ Alternativno, profesor može dodati studenta preko usernamea ili emaila.
 
 Nije potrebno dizajnirati interfejs. Dovoljni su backend forma, endpoint i minimalna funkcionalna stranica.
 
+- [x] Dodana forma za upis studenta na kurs preko enrollment code-a.
+- [x] Samo prijavljen student može poslati enrollment zahtjev.
+- [x] Ispravan enrollment code kreira Enrollment.
+- [x] Pogrešan enrollment code se odbija.
+- [x] Neaktivan kurs se odbija.
+- [x] Ponovni upis istim kodom ne stvara duplikat.
+- [x] Professor ne može koristiti student enrollment endpoint.
+
 # P0 — generička struktura znanja
 
 ## 8. Napraviti generički KnowledgeComponent model
