@@ -27,7 +27,15 @@ Nemoj pushati direktno na `main`. Praviti odvojene commitove po logičkim cjelin
 
 # P0 — autentifikacija i korisničke uloge
 
-## 1. Uvesti pravi Django User model
+- [x] Dodana `accounts` aplikacija.
+- [x] Dodan custom Django `User` model.
+- [x] Dodane role `student` i `professor`.
+- [x] `AUTH_USER_MODEL = "accounts.User"` je postavljen.
+- [x] Password hashing je potvrđen.
+- [x] `accounts` migracija je kreirana i primijenjena.
+- [x] `python manage.py check` prolazi.
+
+## 1. Uvesti pravi Django User model 
 
 Trenutni sistem u `users.json` i izbor postojećeg usernamea treba zamijeniti pravom Django autentifikacijom.
 
