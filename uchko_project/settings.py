@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "learning",
     "accounts",
-]
+    "courses",
+    ]
 
 AUTH_USER_MODEL = "accounts.User"
 
