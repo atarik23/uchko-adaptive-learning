@@ -173,6 +173,13 @@ Acceptance criteria:
 * uloga se čuva u bazi;
 * password nije spremljen kao običan tekst.
 
+- [x] Obična javna registracija ne može kreirati profesora.
+- [x] Dodana `create_professor` management command.
+- [x] Professor se kreira sa `role = "professor"`.
+- [x] Username i email duplikati se odbijaju.
+- [x] Professor password se postavlja preko `set_password()`.
+- [x] Password hashing je ručno potvrđen preko `check_password()`.
+
 # P0 — generički akademski modeli
 
 ## 5. Dodati Course/Classroom model
