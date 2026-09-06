@@ -420,6 +420,13 @@ Acceptance criteria:
 * podržana su pitanja s jednim ili više knowledge componenta;
 * dodatna dataset-specifična polja mogu stati u `metadata`.
 
+- [x] Dodan LearningAttempt model.
+- [x] Pokušaj povezuje Enrollment i KnowledgeComponent.
+- [x] is_correct, attempted_at i context polja su ispravno definisana.
+- [x] Validacija: komponenta mora biti iz istog kursa kao i upis.
+- [x] Više pokušaja za istu komponentu je moguće.
+- [x] Django admin prikazuje pokušaje.
+
 ## 11. Napraviti LearningSession model
 
 Session ne treba ostati samo nasumični ID u Parquet fajlu.
