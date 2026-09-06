@@ -250,15 +250,16 @@ Acceptance criteria:
 * professor nije moguće upisati kao studenta;
 * profesor može dohvatiti samo studente svojih kurseva.
 
-- [x] Dodan generički Course model.
-- [x] Course code je unique.
-- [x] Course ima unique enrollment code.
+- [x] Dodan generički `Course` model.
 - [x] Jedan professor može imati više kurseva.
-- [x] Student ne može biti professor kursa.
-- [x] Dodan Enrollment model.
+- [x] Svaki Course ima jednog odgovornog profesora.
+- [x] Student ne može biti postavljen kao professor kursa.
+- [x] `Course.code` je jedinstven.
+- [x] Dodan je jedinstven `enrollment_code`.
+- [x] Dodan `Enrollment` model.
 - [x] Student može biti upisan na kurs.
 - [x] Professor ne može biti upisan kao student.
-- [x] Dupli enrollment se odbija.
+- [x] Dupli enrollment se odbija preko `unique_course_student`.
 
 ## 7. Napraviti način upisa studenta na kurs
 
