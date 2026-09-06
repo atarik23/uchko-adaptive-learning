@@ -116,10 +116,13 @@
                     Settings
                 </a>
 
-                {% if username %}
-                    <a href="{% url 'learning:logout' %}">
-                        Log out
-                    </a>
+                {% if request.user.is_authenticated %}
+                    <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
+                         {% csrf_token %}
+                        <button type="submit" class="nav-logout-btn">
+                            Log out
+                        </button>
+                    </form>
                 {% endif %}
             </nav>
         </div>
