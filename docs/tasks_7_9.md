@@ -34,6 +34,17 @@ Nemoj pushati direktno na `main`. Praviti odvojene commitove po logičkim cjelin
 - [x] Password hashing je potvrđen.
 - [x] `accounts` migracija je kreirana i primijenjena.
 - [x] `python manage.py check` prolazi.
+- [x] Dodan custom Django User model sa rolama student i professor.
+- [x] Registracija kreira samo student korisnike.
+- [x] Username, ime, prezime, email i potvrda lozinke se validiraju.
+- [x] Passwordi se čuvaju kroz Django hashing.
+- [x] Login radi sa usernameom ili emailom i passwordom.
+- [x] Pogrešan password se odbija.
+- [x] Login koristi Django `authenticate()` i `login()`.
+- [x] Logout koristi Django `logout()`.
+- [x] Logout briše privremeni learning runtime state.
+- [x] Neprijavljen korisnik se preusmjerava na login.
+- [x] Stari `select-user` endpoint više ne omogućava passwordless pristup.
 
 ## 1. Uvesti pravi Django User model 
 
