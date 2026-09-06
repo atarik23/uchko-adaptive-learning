@@ -375,6 +375,14 @@ Validacija:
 * student mora biti upisan na kurs kojem knowledge component pripada;
 * jedno stanje po studentu i knowledge componentu.
 
+- [x] Dodan StudentKnowledgeState model.
+- [x] Stanje povezuje Enrollment i KnowledgeComponent.
+- [x] mastery_prob je float (0–1).
+- [x] last_attempt_at i last_updated_at su ispravno definisani.
+- [x] (enrollment, knowledge_component) je unique.
+- [x] Validacija: komponenta mora biti iz istog kursa kao i upis.
+- [x] Django admin prikazuje stanja.
+
 ## 10. Napraviti generički LearningAttempt model
 
 Potrebno je imati bazu interakcija koja nije vezana za trenutni format pitanja.
