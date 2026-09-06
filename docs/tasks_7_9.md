@@ -451,6 +451,13 @@ Pravila:
 * logout može zatvoriti aktivnu sesiju ili je ostaviti jasno označenu;
 * session podaci ostaju sačuvani nakon novog loginovanja.
 
+- [x] Dodan LearningSession model.
+- [x] Sesija povezuje Enrollment i (kasnije) LearningAttempt.
+- [x] started_at, ended_at i duration_seconds su ispravno definisani.
+- [x] metadata JSON je fleksibilan za dodatne podatke.
+- [x] LearningAttempt ima optional session FK.
+- [x] Django admin prikazuje sesije.
+
 # P0 — autorizacija i privatnost
 
 ## 12. Zaštititi sve interne viewove
