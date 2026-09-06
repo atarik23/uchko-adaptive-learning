@@ -494,3 +494,18 @@ pre { background: rgba(0,0,0,0.04); padding: 0.7rem; border-radius: 8px; overflo
         align-items: flex-start;
     }
 }
+.nav-logout-btn {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.nav-logout-btn:hover {
+    background: #eef2ff;
+    color: #4338ca;
+}
