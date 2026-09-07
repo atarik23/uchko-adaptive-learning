@@ -26,7 +26,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "learning",
-]
+    "accounts",
+    "courses",
+    ]
+
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -37,6 +41,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "learning:practice"
+LOGOUT_REDIRECT_URL = "accounts:login"
 
 ROOT_URLCONF = "uchko_project.urls"
 

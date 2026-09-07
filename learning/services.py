@@ -86,13 +86,76 @@ def safe_float(x, default: float = 0.0) -> float:
     except Exception:
         return float(default)
 
+def initialize_authenticated_runtime_state(request) -> None:
+    """
+    Initializes the temporary runtime state used by the current learning flow.
+
+    Authentication identity comes only from request.user. The session values
+    are compatibility state for the existing dataset/event pipeline and will
+    be replaced by persistent Django learning models in a later task.
+    """
+    if not request.user.is_authenticated:
+        return
+
+    s = request.session
+
+    s["student_id"] = str(request.user.pk)
+    s["username"] = request.user.username
+    s["session_id"] = f"S_{uuid.uuid4().hex[:8]}"
+    s["session_goal_skill_id"] = None
+    s["session_start_mastery"] = {}
+
+    reset_runtime_state(request)
+
+    append_event(
+        make_start_event(
+            str(request.user.pk),
+            s["session_id"],
+        ),
+        events_path=settings.UCHKO_EVENTS_PATH,
+    )
+
+    s.modified = True
+
+
+def clear_authenticated_runtime_state(request) -> None:
+    """
+    Clears only temporary learning-session state before Django logout().
+    """
+    keys = [
+        "student_id",
+        "username",
+        "session_id",
+        "attempts",
+        "current_q",
+        "q_start_ts",
+        "current_skill_id",
+        "risk_smoothed",
+        "session_goal_skill_id",
+        "session_start_mastery",
+        "adaptive_mode",
+        "manual_skill_id",
+        "manual_difficulty",
+        "use_llm",
+        "max_llm_calls",
+        "llm_calls_used",
+        "llm_used",
+        "flash_messages",
+    ]
+
+    for key in keys:
+        request.session.pop(key, None)
+
+    request.session.modified = True
 
 def ensure_state_defaults(request) -> None:
     s = request.session
     skill_ids = get_skill_ids()
 
-    s.setdefault("student_id", None)
-    s.setdefault("username", None)
+    if request.user.is_authenticated:
+        s["student_id"] = str(request.user.pk)
+        s["username"] = request.user.username
+
     s.setdefault("session_id", f"S_{uuid.uuid4().hex[:8]}")
 
     s.setdefault("attempts", {})

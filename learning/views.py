@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods, require_POST
+from django.contrib.auth.decorators import login_required
 
 import pandas as pd
 
@@ -20,51 +21,45 @@ from . import services as svc
 
 
 def _require_login(request):
+    if not request.user.is_authenticated:
+        return redirect("accounts:login")
+
     svc.ensure_state_defaults(request)
-    if not svc.is_logged_in(request):
-        return redirect("learning:account")
     return None
 
 
 def account_view(request):
-    svc.ensure_state_defaults(request)
-    if svc.is_logged_in(request):
+    """
+    Legacy root route. It no longer lists or authenticates users.
+    """
+    if request.user.is_authenticated:
         return redirect("learning:practice")
 
-    context = {
-        "users": svc.list_users(),
-        "flash_messages": svc.pop_flash_messages(request),
-    }
-    return render(request, "learning/account.html", context)
+    return redirect("accounts:login")
 
 
-@require_POST
 def create_user_view(request):
-    svc.ensure_state_defaults(request)
-    username = (request.POST.get("new_username") or "").strip()
-    if not username:
-        svc.add_flash(request, "Username cannot be empty.", level="error")
-        return redirect("learning:account")
-    svc.create_and_login(request, username)
-    return redirect("learning:practice")
+    """
+    Legacy endpoint retained only for backwards-compatible links.
+    Public registration now lives at /accounts/register/.
+    """
+    return redirect("accounts:register")
 
 
-@require_POST
 def select_user_view(request):
-    svc.ensure_state_defaults(request)
-    username = (request.POST.get("username") or "").strip()
-    if not username:
-        svc.add_flash(request, "Please choose a user.", level="error")
-        return redirect("learning:account")
-    svc.login_existing(request, username)
-    return redirect("learning:practice")
+    """
+    Legacy endpoint intentionally does not authenticate a selected username.
+    """
+    return redirect("accounts:login")
 
 
 def logout_view(request):
-    svc.logout(request)
-    return redirect("learning:account")
+    """
+    Legacy endpoint redirects to the Django-auth logout endpoint.
+    """
+    return redirect("accounts:logout")
 
-
+@login_required
 @require_POST
 def new_session_view(request):
     redir = _require_login(request)
@@ -74,7 +69,7 @@ def new_session_view(request):
     svc.add_flash(request, "Started a new session.", level="info")
     return redirect("learning:practice")
 
-
+@login_required
 @require_POST
 def end_session_view(request):
     redir = _require_login(request)
@@ -98,7 +93,7 @@ def _build_top_context(request, state: dict) -> dict:
         "skill_ids": state["skill_ids"],
     }
 
-
+@login_required
 def practice_view(request):
     redir = _require_login(request)
     if redir:
@@ -156,7 +151,7 @@ def practice_view(request):
     }
     return render(request, "learning/practice.html", context)
 
-
+@login_required
 @require_POST
 def generate_question_view(request):
     redir = _require_login(request)
@@ -166,7 +161,7 @@ def generate_question_view(request):
     svc.make_question(request, state["chosen_skill_id"], state["chosen_difficulty"])
     return redirect("learning:practice")
 
-
+@login_required
 @require_POST
 def submit_answer_view(request):
     redir = _require_login(request)
@@ -197,7 +192,7 @@ def submit_answer_view(request):
     svc.make_question(request, state["chosen_skill_id"], state["chosen_difficulty"])
     return redirect("learning:practice")
 
-
+@login_required
 @require_POST
 def request_hint_view(request):
     redir = _require_login(request)
@@ -212,7 +207,7 @@ def request_hint_view(request):
     svc.add_flash(request, f"Hint: {hint_text}", level="info")
     return redirect("learning:practice")
 
-
+@login_required
 @require_POST
 def request_explanation_view(request):
     redir = _require_login(request)
@@ -227,7 +222,7 @@ def request_explanation_view(request):
     svc.add_flash(request, f"Explanation: {exp_text}", level="info")
     return redirect("learning:practice")
 
-
+@login_required
 @require_POST
 def set_goal_view(request):
     redir = _require_login(request)
@@ -256,7 +251,7 @@ def set_goal_view(request):
     svc.add_flash(request, "Goal updated. Generate a new question to start practicing it.", level="success")
     return redirect("learning:practice")
 
-
+@login_required
 @require_POST
 def toggle_adaptive_view(request):
     redir = _require_login(request)
@@ -267,7 +262,7 @@ def toggle_adaptive_view(request):
     request.session.modified = True
     return redirect("learning:practice")
 
-
+@login_required
 @require_POST
 def set_manual_view(request):
     redir = _require_login(request)
@@ -288,7 +283,7 @@ def set_manual_view(request):
     s.modified = True
     return redirect("learning:practice")
 
-
+@login_required
 def progress_view(request):
     redir = _require_login(request)
     if redir:
@@ -325,7 +320,7 @@ def progress_view(request):
     }
     return render(request, "learning/progress.html", context)
 
-
+@login_required
 def curriculum_view(request):
     redir = _require_login(request)
     if redir:
@@ -360,7 +355,7 @@ def curriculum_view(request):
     }
     return render(request, "learning/curriculum.html", context)
 
-
+@login_required
 def curriculum_graph_view(request):
     redir = _require_login(request)
     if redir:
@@ -388,7 +383,7 @@ def curriculum_graph_view(request):
     except Exception as e:
         return HttpResponse(f"Could not render curriculum graph: {e}", status=500, content_type="text/plain")
 
-
+@login_required
 def settings_view(request):
     redir = _require_login(request)
     if redir:
@@ -475,7 +470,7 @@ def settings_view(request):
     }
     return render(request, "learning/settings.html", context)
 
-
+@login_required
 def export_session_csv(request):
     redir = _require_login(request)
     if redir:

@@ -27,7 +27,26 @@ Nemoj pushati direktno na `main`. Praviti odvojene commitove po logičkim cjelin
 
 # P0 — autentifikacija i korisničke uloge
 
-## 1. Uvesti pravi Django User model
+- [x] Dodana `accounts` aplikacija.
+- [x] Dodan custom Django `User` model.
+- [x] Dodane role `student` i `professor`.
+- [x] `AUTH_USER_MODEL = "accounts.User"` je postavljen.
+- [x] Password hashing je potvrđen.
+- [x] `accounts` migracija je kreirana i primijenjena.
+- [x] `python manage.py check` prolazi.
+- [x] Dodan custom Django User model sa rolama student i professor.
+- [x] Registracija kreira samo student korisnike.
+- [x] Username, ime, prezime, email i potvrda lozinke se validiraju.
+- [x] Passwordi se čuvaju kroz Django hashing.
+- [x] Login radi sa usernameom ili emailom i passwordom.
+- [x] Pogrešan password se odbija.
+- [x] Login koristi Django `authenticate()` i `login()`.
+- [x] Logout koristi Django `logout()`.
+- [x] Logout briše privremeni learning runtime state.
+- [x] Neprijavljen korisnik se preusmjerava na login.
+- [x] Stari `select-user` endpoint više ne omogućava passwordless pristup.
+
+## 1. Uvesti pravi Django User model 
 
 Trenutni sistem u `users.json` i izbor postojećeg usernamea treba zamijeniti pravom Django autentifikacijom.
 
@@ -154,6 +173,13 @@ Acceptance criteria:
 * uloga se čuva u bazi;
 * password nije spremljen kao običan tekst.
 
+- [x] Obična javna registracija ne može kreirati profesora.
+- [x] Dodana `create_professor` management command.
+- [x] Professor se kreira sa `role = "professor"`.
+- [x] Username i email duplikati se odbijaju.
+- [x] Professor password se postavlja preko `set_password()`.
+- [x] Password hashing je ručno potvrđen preko `check_password()`.
+
 # P0 — generički akademski modeli
 
 ## 5. Dodati Course/Classroom model
@@ -224,6 +250,17 @@ Acceptance criteria:
 * professor nije moguće upisati kao studenta;
 * profesor može dohvatiti samo studente svojih kurseva.
 
+- [x] Dodan generički `Course` model.
+- [x] Jedan professor može imati više kurseva.
+- [x] Svaki Course ima jednog odgovornog profesora.
+- [x] Student ne može biti postavljen kao professor kursa.
+- [x] `Course.code` je jedinstven.
+- [x] Dodan je jedinstven `enrollment_code`.
+- [x] Dodan `Enrollment` model.
+- [x] Student može biti upisan na kurs.
+- [x] Professor ne može biti upisan kao student.
+- [x] Dupli enrollment se odbija preko `unique_course_student`.
+
 ## 7. Napraviti način upisa studenta na kurs
 
 Implementirati jednostavan i generički sistem upisa.
@@ -239,6 +276,14 @@ Najpraktičnija opcija:
 Alternativno, profesor može dodati studenta preko usernamea ili emaila.
 
 Nije potrebno dizajnirati interfejs. Dovoljni su backend forma, endpoint i minimalna funkcionalna stranica.
+
+- [x] Dodana forma za upis studenta na kurs preko enrollment code-a.
+- [x] Samo prijavljen student može poslati enrollment zahtjev.
+- [x] Ispravan enrollment code kreira Enrollment.
+- [x] Pogrešan enrollment code se odbija.
+- [x] Neaktivan kurs se odbija.
+- [x] Ponovni upis istim kodom ne stvara duplikat.
+- [x] Professor ne može koristiti student enrollment endpoint.
 
 # P0 — generička struktura znanja
 
@@ -279,6 +324,14 @@ class KnowledgeComponent(models.Model):
 `external_id` će kasnije omogućiti povezivanje s bilo kojim datasetom. `metadata` može čuvati dataset-specifične informacije bez promjene šeme.
 
 Ne importovati sada postojeće matematičke skillove ako to komplikuje rad. Bitno je napraviti generičku strukturu i testne instance.
+
+- [x] Dodan generički KnowledgeComponent model.
+- [x] Komponenta pripada Course modelu.
+- [x] `external_id` je unique unutar coursea.
+- [x] Podržana je parent/child hijerarhija.
+- [x] Parent mora pripadati istom courseu.
+- [x] Podržan je fleksibilni metadata JSON.
+- [x] Django admin prikazuje komponente.
 
 ## 9. Napraviti StudentKnowledgeState model
 
@@ -322,6 +375,14 @@ Validacija:
 * student mora biti upisan na kurs kojem knowledge component pripada;
 * jedno stanje po studentu i knowledge componentu.
 
+- [x] Dodan StudentKnowledgeState model.
+- [x] Stanje povezuje Enrollment i KnowledgeComponent.
+- [x] mastery_prob je float (0–1).
+- [x] last_attempt_at i last_updated_at su ispravno definisani.
+- [x] (enrollment, knowledge_component) je unique.
+- [x] Validacija: komponenta mora biti iz istog kursa kao i upis.
+- [x] Django admin prikazuje stanja.
+
 ## 10. Napraviti generički LearningAttempt model
 
 Potrebno je imati bazu interakcija koja nije vezana za trenutni format pitanja.
@@ -359,6 +420,13 @@ Acceptance criteria:
 * podržana su pitanja s jednim ili više knowledge componenta;
 * dodatna dataset-specifična polja mogu stati u `metadata`.
 
+- [x] Dodan LearningAttempt model.
+- [x] Pokušaj povezuje Enrollment i KnowledgeComponent.
+- [x] is_correct, attempted_at i context polja su ispravno definisana.
+- [x] Validacija: komponenta mora biti iz istog kursa kao i upis.
+- [x] Više pokušaja za istu komponentu je moguće.
+- [x] Django admin prikazuje pokušaje.
+
 ## 11. Napraviti LearningSession model
 
 Session ne treba ostati samo nasumični ID u Parquet fajlu.
@@ -382,6 +450,13 @@ Pravila:
 * završena sesija se ne mijenja;
 * logout može zatvoriti aktivnu sesiju ili je ostaviti jasno označenu;
 * session podaci ostaju sačuvani nakon novog loginovanja.
+
+- [x] Dodan LearningSession model.
+- [x] Sesija povezuje Enrollment i (kasnije) LearningAttempt.
+- [x] started_at, ended_at i duration_seconds su ispravno definisani.
+- [x] metadata JSON je fleksibilan za dodatne podatke.
+- [x] LearningAttempt ima optional session FK.
+- [x] Django admin prikazuje sesije.
 
 # P0 — autorizacija i privatnost
 
