@@ -298,8 +298,6 @@ class LearningSession(models.Model):
     def clean(self):
         super().clean()
 
-        # Opcionalna dodatna validacija: ako postoje attempti,
-        # provjeri da li su svi iz istog kursa kao enrollment.
         if self.pk:
             attempts = self.learning_attempts.all()
             if attempts.exists():
@@ -310,7 +308,6 @@ class LearningSession(models.Model):
                         )
 
     def save(self, *args, **kwargs):
-        # Ako su oba vremena postavljena, izračunaj trajanje
         if self.started_at and self.ended_at:
             delta = self.ended_at - self.started_at
             self.duration_seconds = int(delta.total_seconds())
