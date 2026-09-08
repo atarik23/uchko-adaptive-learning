@@ -6,12 +6,24 @@ from django.views.decorators.http import require_http_methods, require_POST
 from learning import services as learning_services
 
 from .forms import LoginForm, StudentRegistrationForm
+from .models import User
+
+
+def redirect_for_user(user):
+    """
+    Redirect an authenticated user to the correct area
+    based on their Uchko role.
+    """
+    if user.role == User.Role.PROFESSOR:
+        return redirect("courses:professor_dashboard")
+
+    return redirect("learning:practice")
 
 
 @require_http_methods(["GET", "POST"])
 def register_view(request):
     if request.user.is_authenticated:
-        return redirect("learning:practice")
+        return redirect_for_user(request.user)
 
     if request.method == "POST":
         form = StudentRegistrationForm(request.POST)
@@ -20,9 +32,11 @@ def register_view(request):
             user = form.save()
             login(request, user)
 
-            learning_services.initialize_authenticated_runtime_state(request)
+            learning_services.initialize_authenticated_runtime_state(
+                request
+            )
 
-            return redirect("learning:practice")
+            return redirect_for_user(user)
     else:
         form = StudentRegistrationForm()
 
@@ -36,17 +50,22 @@ def register_view(request):
 @require_http_methods(["GET", "POST"])
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect("learning:practice")
+        return redirect_for_user(request.user)
 
     if request.method == "POST":
         form = LoginForm(request, request.POST)
 
         if form.is_valid():
-            login(request, form.get_user())
+            user = form.get_user()
+            login(request, user)
 
-            learning_services.initialize_authenticated_runtime_state(request)
+            # Only students need the temporary practice runtime state.
+            if user.role == User.Role.STUDENT:
+                learning_services.initialize_authenticated_runtime_state(
+                    request
+                )
 
-            return redirect("learning:practice")
+            return redirect_for_user(user)
     else:
         form = LoginForm(request)
 

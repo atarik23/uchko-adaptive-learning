@@ -1,8 +1,9 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
 
+from accounts.decorators import professor_required
 from accounts.models import User
 
 from .forms import EnrollmentCodeForm
@@ -17,7 +18,7 @@ def enroll_view(request):
             request,
             "Only student accounts can enroll in a course.",
         )
-        return redirect("learning:practice")
+        return redirect("courses:professor_dashboard")
 
     if request.method == "POST":
         form = EnrollmentCodeForm(request.POST)
@@ -26,7 +27,9 @@ def enroll_view(request):
             enrollment_code = form.cleaned_data["enrollment_code"]
 
             try:
-                course = Course.objects.get(enrollment_code=enrollment_code)
+                course = Course.objects.get(
+                    enrollment_code=enrollment_code
+                )
             except Course.DoesNotExist:
                 form.add_error(
                     "enrollment_code",
@@ -58,6 +61,7 @@ def enroll_view(request):
                     else:
                         enrollment.is_active = True
                         enrollment.save(update_fields=["is_active"])
+
                         messages.success(
                             request,
                             f"Your enrollment in {course.name} was reactivated.",
@@ -71,4 +75,22 @@ def enroll_view(request):
         request,
         "courses/enroll.html",
         {"form": form},
+    )
+
+
+@professor_required
+def professor_dashboard_view(request):
+    courses = (
+        Course.objects
+        .filter(professor=request.user)
+        .prefetch_related("enrollments__student")
+        .order_by("code")
+    )
+
+    return render(
+        request,
+        "courses/professor_dashboard.html",
+        {
+            "courses": courses,
+        },
     )

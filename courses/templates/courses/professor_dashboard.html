@@ -1,0 +1,71 @@
+{% extends "learning/base.html" %}
+
+{% block title %}Professor Dashboard — Uchko{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="card-title">Professor Dashboard</div>
+
+    <p>
+        Welcome,
+        {{ request.user.first_name|default:request.user.username }}.
+    </p>
+</section>
+
+{% if courses %}
+    {% for course in courses %}
+        <section class="card" style="margin-top: 1rem;">
+            <div class="card-title">
+                {{ course.code }} — {{ course.name }}
+            </div>
+
+            {% if course.description %}
+                <p>{{ course.description }}</p>
+            {% endif %}
+
+            <p>
+                <strong>Enrollment code:</strong>
+                <code>{{ course.enrollment_code }}</code>
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {% if course.is_active %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+            </p>
+
+            <h3>Students</h3>
+
+            {% if course.enrollments.all %}
+                <ul>
+                    {% for enrollment in course.enrollments.all %}
+                        <li>
+                            {{ enrollment.student.first_name }}
+                            {{ enrollment.student.last_name }}
+
+                            {% if not enrollment.student.first_name and not enrollment.student.last_name %}
+                                {{ enrollment.student.username }}
+                            {% else %}
+                                ({{ enrollment.student.username }})
+                            {% endif %}
+
+                            {% if not enrollment.is_active %}
+                                — inactive enrollment
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No students are currently enrolled in this course.</p>
+            {% endif %}
+        </section>
+    {% endfor %}
+{% else %}
+    <section class="card">
+        <p>You do not currently have any courses.</p>
+    </section>
+{% endif %}
+{% endblock %}
