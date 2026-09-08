@@ -92,5 +92,6 @@ def professor_dashboard_view(request):
         "courses/professor_dashboard.html",
         {
             "courses": courses,
+            "active_tab": "professor_dashboard",
         },
     )

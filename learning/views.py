@@ -10,7 +10,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods, require_POST
-from django.contrib.auth.decorators import login_required
+from accounts.decorators import student_required
+from accounts.models import User
 
 import pandas as pd
 
@@ -33,6 +34,9 @@ def account_view(request):
     Legacy root route. It no longer lists or authenticates users.
     """
     if request.user.is_authenticated:
+        if request.user.role == User.Role.PROFESSOR:
+            return redirect("courses:professor_dashboard")
+
         return redirect("learning:practice")
 
     return redirect("accounts:login")
@@ -59,7 +63,7 @@ def logout_view(request):
     """
     return redirect("accounts:logout")
 
-@login_required
+@student_required
 @require_POST
 def new_session_view(request):
     redir = _require_login(request)
@@ -69,7 +73,7 @@ def new_session_view(request):
     svc.add_flash(request, "Started a new session.", level="info")
     return redirect("learning:practice")
 
-@login_required
+@student_required
 @require_POST
 def end_session_view(request):
     redir = _require_login(request)
@@ -93,7 +97,7 @@ def _build_top_context(request, state: dict) -> dict:
         "skill_ids": state["skill_ids"],
     }
 
-@login_required
+@student_required
 def practice_view(request):
     redir = _require_login(request)
     if redir:
@@ -151,7 +155,7 @@ def practice_view(request):
     }
     return render(request, "learning/practice.html", context)
 
-@login_required
+@student_required
 @require_POST
 def generate_question_view(request):
     redir = _require_login(request)
@@ -161,7 +165,7 @@ def generate_question_view(request):
     svc.make_question(request, state["chosen_skill_id"], state["chosen_difficulty"])
     return redirect("learning:practice")
 
-@login_required
+@student_required
 @require_POST
 def submit_answer_view(request):
     redir = _require_login(request)
@@ -192,7 +196,7 @@ def submit_answer_view(request):
     svc.make_question(request, state["chosen_skill_id"], state["chosen_difficulty"])
     return redirect("learning:practice")
 
-@login_required
+@student_required
 @require_POST
 def request_hint_view(request):
     redir = _require_login(request)
@@ -207,7 +211,7 @@ def request_hint_view(request):
     svc.add_flash(request, f"Hint: {hint_text}", level="info")
     return redirect("learning:practice")
 
-@login_required
+@student_required
 @require_POST
 def request_explanation_view(request):
     redir = _require_login(request)
@@ -222,7 +226,7 @@ def request_explanation_view(request):
     svc.add_flash(request, f"Explanation: {exp_text}", level="info")
     return redirect("learning:practice")
 
-@login_required
+@student_required
 @require_POST
 def set_goal_view(request):
     redir = _require_login(request)
@@ -251,7 +255,7 @@ def set_goal_view(request):
     svc.add_flash(request, "Goal updated. Generate a new question to start practicing it.", level="success")
     return redirect("learning:practice")
 
-@login_required
+@student_required
 @require_POST
 def toggle_adaptive_view(request):
     redir = _require_login(request)
@@ -262,7 +266,7 @@ def toggle_adaptive_view(request):
     request.session.modified = True
     return redirect("learning:practice")
 
-@login_required
+@student_required
 @require_POST
 def set_manual_view(request):
     redir = _require_login(request)
@@ -283,7 +287,7 @@ def set_manual_view(request):
     s.modified = True
     return redirect("learning:practice")
 
-@login_required
+@student_required
 def progress_view(request):
     redir = _require_login(request)
     if redir:
@@ -320,7 +324,7 @@ def progress_view(request):
     }
     return render(request, "learning/progress.html", context)
 
-@login_required
+@student_required
 def curriculum_view(request):
     redir = _require_login(request)
     if redir:
@@ -355,7 +359,7 @@ def curriculum_view(request):
     }
     return render(request, "learning/curriculum.html", context)
 
-@login_required
+@student_required
 def curriculum_graph_view(request):
     redir = _require_login(request)
     if redir:
@@ -383,7 +387,7 @@ def curriculum_graph_view(request):
     except Exception as e:
         return HttpResponse(f"Could not render curriculum graph: {e}", status=500, content_type="text/plain")
 
-@login_required
+@student_required
 def settings_view(request):
     redir = _require_login(request)
     if redir:
@@ -470,7 +474,7 @@ def settings_view(request):
     }
     return render(request, "learning/settings.html", context)
 
-@login_required
+@student_required
 def export_session_csv(request):
     redir = _require_login(request)
     if redir:
