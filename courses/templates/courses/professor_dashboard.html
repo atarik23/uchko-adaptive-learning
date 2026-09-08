@@ -37,34 +37,94 @@
                 {% endif %}
             </p>
 
+            <p>
+                <strong>Number of students:</strong>
+                {{ course.student_summaries|length }}
+            </p>
+
             <h3>Students</h3>
 
-            {% if course.enrollments.all %}
-                <ul>
-                    {% for enrollment in course.enrollments.all %}
-                        <li>
-                            {{ enrollment.student.first_name }}
-                            {{ enrollment.student.last_name }}
+            {% if course.student_summaries %}
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Username</th>
+                                <th>Enrollment</th>
+                                <th>Attempts</th>
+                                <th>Accuracy</th>
+                                <th>Sessions</th>
+                                <th>Last activity</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
 
-                            {% if not enrollment.student.first_name and not enrollment.student.last_name %}
-                                {{ enrollment.student.username }}
-                            {% else %}
-                                ({{ enrollment.student.username }})
-                            {% endif %}
+                        <tbody>
+                            {% for enrollment in course.student_summaries %}
+                                <tr>
+                                    <td>
+                                        {% if enrollment.student.first_name or enrollment.student.last_name %}
+                                            {{ enrollment.student.first_name }}
+                                            {{ enrollment.student.last_name }}
+                                        {% else %}
+                                            {{ enrollment.student.username }}
+                                        {% endif %}
+                                    </td>
 
-                            {% if not enrollment.is_active %}
-                                — inactive enrollment
-                            {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                                    <td>
+                                        {{ enrollment.student.username }}
+                                    </td>
+
+                                    <td>
+                                        {% if enrollment.is_active %}
+                                            Active
+                                        {% else %}
+                                            Inactive
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {{ enrollment.attempt_count }}
+                                    </td>
+
+                                    <td>
+                                        {% if enrollment.average_accuracy is not None %}
+                                            {% widthratio enrollment.average_accuracy 1 100 %}%
+                                        {% else %}
+                                            No attempts
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {{ enrollment.session_count }}
+                                    </td>
+
+                                    <td>
+                                        {% if enrollment.last_activity %}
+                                            {{ enrollment.last_activity|date:"d M Y, H:i" }}
+                                        {% else %}
+                                            No activity
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <a href="{% url 'courses:professor_student_detail' enrollment.id %}">
+                                            View details
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
                 <p>No students are currently enrolled in this course.</p>
             {% endif %}
         </section>
     {% endfor %}
 {% else %}
-    <section class="card">
+    <section class="card" style="margin-top: 1rem;">
         <p>You do not currently have any courses.</p>
     </section>
 {% endif %}
