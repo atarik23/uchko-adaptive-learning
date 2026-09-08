@@ -4,7 +4,7 @@ from django.db.models import Avg, Count, Max, Prefetch
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods
 
-from accounts.decorators import professor_required
+from accounts.decorators import professor_required, student_required
 from accounts.models import User
 
 from .forms import EnrollmentCodeForm
@@ -177,5 +177,48 @@ def professor_student_detail_view(request, enrollment_id):
             "learning_sessions": learning_sessions,
             "attempt_statistics": attempt_statistics,
             "active_tab": "professor_dashboard",
+        },
+    )
+
+
+@student_required
+def student_dashboard_view(request):
+    enrollments = (
+        Enrollment.objects
+        .filter(student=request.user)
+        .select_related(
+            "course",
+            "course__professor",
+        )
+        .annotate(
+            attempt_count=Count(
+                "learning_attempts",
+                distinct=True,
+            ),
+            average_accuracy=Avg(
+                "learning_attempts__is_correct",
+            ),
+            session_count=Count(
+                "learning_sessions",
+                distinct=True,
+            ),
+            last_activity=Max(
+                "learning_attempts__attempted_at",
+            ),
+        )
+        .prefetch_related(
+            "knowledge_states__knowledge_component",
+            "learning_attempts__knowledge_component",
+            "learning_sessions__goal_component",
+        )
+        .order_by("course__code")
+    )
+
+    return render(
+        request,
+        "courses/student_dashboard.html",
+        {
+            "enrollments": enrollments,
+            "active_tab": "student_dashboard",
         },
     )

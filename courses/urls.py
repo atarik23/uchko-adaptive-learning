@@ -15,6 +15,11 @@ urlpatterns = [
         name="professor_student_detail",
     ),
     path(
+        "student/dashboard/",
+        views.student_dashboard_view,
+        name="student_dashboard",
+    ),
+    path(
         "enroll/",
         views.enroll_view,
         name="enroll",

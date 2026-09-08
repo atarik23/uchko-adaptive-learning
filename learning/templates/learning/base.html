@@ -110,6 +110,11 @@
                 {% if request.user.is_authenticated %}
 
                     {% if request.user.role == "student" %}
+                        <a href="{% url 'courses:student_dashboard' %}"
+                        class="{% if active_tab == 'student_dashboard' %}active{% endif %}">
+                            My Learning
+                        </a>
+                        
                         <a href="{% url 'learning:practice' %}"
                         class="{% if active_tab == 'practice' %}active{% endif %}">
                             Practice
