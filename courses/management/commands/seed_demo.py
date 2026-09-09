@@ -234,6 +234,7 @@ class Command(BaseCommand):
                     "response_time_ms": 18000 + index * 2400,
                     "hint_count": 0 if is_correct else 1,
                     "is_correct": is_correct,
+                    "answer_is_correct": is_correct,
                     "attempted_at": attempted_at,
                     "context": {
                         "demo": True,

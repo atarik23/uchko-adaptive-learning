@@ -223,6 +223,13 @@ def update_bkt_mastery(
     )
 
 
+def get_bkt_version() -> str:
+    artifact = load_bkt_artifact()
+    return str(
+        artifact.get("version", "unknown")
+    )
+
+
 def _validate_probability(
     value: float,
     name: str,

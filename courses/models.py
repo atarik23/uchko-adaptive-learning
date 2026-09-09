@@ -308,6 +308,10 @@ class LearningAttempt(models.Model):
 
     is_correct = models.BooleanField()
 
+    answer_is_correct = models.BooleanField(
+        default=False,
+    )
+
     attempted_at = models.DateTimeField()
 
     context = models.JSONField(

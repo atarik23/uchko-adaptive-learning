@@ -2,20 +2,26 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from html import unescape
 
+from django.db import transaction
 from django.db.models import Q
+from django.utils import timezone
 from django.utils.html import strip_tags
 
 from courses.models import (
     Enrollment,
     KnowledgeComponent,
+    LearningAttempt,
     LearningItem,
+    LearningSession,
     StudentKnowledgeState,
 )
 from ml.features import build_success_prediction_input
 from ml.inference import (
     get_bkt_parameters,
+    get_bkt_version,
     initial_mastery,
     predict_success_probability,
+    update_bkt_mastery,
 )
 
 
@@ -36,6 +42,17 @@ class AdaptiveSelection:
     selection_score: float
     bkt_source: str
     reason: str
+
+
+@dataclass(frozen=True)
+class RecordedAttempt:
+    attempt: LearningAttempt
+    knowledge_state: StudentKnowledgeState
+    session: LearningSession
+    answer_is_correct: bool
+    independent_success: bool
+    previous_mastery: float
+    updated_mastery: float
 
 
 def get_student_enrollment(user) -> Enrollment:
@@ -286,6 +303,242 @@ def select_next_learning_item(
         ),
     )
 
+
+@transaction.atomic
+def get_or_create_active_session(
+    enrollment: Enrollment,
+    goal_component: KnowledgeComponent | None = None,
+) -> LearningSession:
+    session = (
+        LearningSession.objects
+        .select_for_update()
+        .filter(
+            enrollment=enrollment,
+            is_active=True,
+            ended_at=None,
+        )
+        .order_by("-started_at", "-id")
+        .first()
+    )
+
+    if session is None:
+        session = LearningSession.objects.create(
+            enrollment=enrollment,
+            started_at=timezone.now(),
+            is_active=True,
+            goal_component=goal_component,
+            metadata={
+                "source": "database_adaptive_flow",
+            },
+        )
+    elif (
+        goal_component is not None
+        and session.goal_component_id is None
+    ):
+        session.goal_component = goal_component
+        session.save(
+            update_fields=["goal_component"]
+        )
+
+    return session
+
+
+@transaction.atomic
+def record_learning_attempt(
+    enrollment: Enrollment,
+    learning_item: LearningItem,
+    submitted_answer: str,
+    response_time_ms: int,
+    hint_count: int = 0,
+    saw_answer: bool = False,
+    predicted_success_probability: float | None = None,
+) -> RecordedAttempt:
+    response_time_ms = max(
+        int(response_time_ms),
+        0,
+    )
+
+    hint_count = max(
+        int(hint_count),
+        0,
+    )
+
+    enrollment = (
+        Enrollment.objects
+        .select_for_update()
+        .select_related("course", "student")
+        .get(pk=enrollment.pk)
+    )
+
+    learning_item = (
+        LearningItem.objects
+        .select_related(
+            "course",
+            "primary_knowledge_component",
+        )
+        .prefetch_related("knowledge_components")
+        .get(pk=learning_item.pk)
+    )
+
+    if enrollment.course_id != learning_item.course_id:
+        raise ValueError(
+            "The enrollment and learning item must "
+            "belong to the same course."
+        )
+
+    knowledge_component = (
+        learning_item.primary_knowledge_component
+    )
+
+    if knowledge_component is None:
+        raise ValueError(
+            "The learning item has no primary "
+            "knowledge component."
+        )
+
+    session = get_or_create_active_session(
+        enrollment=enrollment,
+        goal_component=knowledge_component,
+    )
+
+    attempt_number = (
+        LearningAttempt.objects
+        .filter(
+            enrollment=enrollment,
+            learning_item=learning_item,
+        )
+        .count()
+        + 1
+    )
+
+    answer_is_correct = check_learning_item_answer(
+        item=learning_item,
+        submitted_answer=submitted_answer,
+    )
+
+    # Ovo odgovara FoundationalASSIST discrete_score:
+    # tačan prvi pokušaj bez hinta i bez prikazanog odgovora.
+    independent_success = bool(
+        answer_is_correct
+        and attempt_number == 1
+        and hint_count == 0
+        and not saw_answer
+    )
+
+    knowledge_state = (
+        StudentKnowledgeState.objects
+        .select_for_update()
+        .filter(
+            enrollment=enrollment,
+            knowledge_component=knowledge_component,
+        )
+        .first()
+    )
+
+    if (
+        knowledge_state is None
+        or knowledge_state.mastery_prob is None
+    ):
+        previous_mastery = float(
+            initial_mastery(
+                knowledge_component.external_id
+            )
+        )
+    else:
+        previous_mastery = float(
+            knowledge_state.mastery_prob
+        )
+
+    bkt_update = update_bkt_mastery(
+        mastery=previous_mastery,
+        is_correct=independent_success,
+        skill_code=knowledge_component.external_id,
+    )
+
+    attempted_at = timezone.now()
+
+    attempt = LearningAttempt.objects.create(
+        enrollment=enrollment,
+        knowledge_component=knowledge_component,
+        learning_item=learning_item,
+        session=session,
+        external_question_id=(
+            learning_item.external_id
+        ),
+        question_type=learning_item.problem_type,
+        student_answer=str(submitted_answer),
+        score=1.0 if independent_success else 0.0,
+        response_time_ms=response_time_ms,
+        hint_count=hint_count,
+        saw_answer=bool(saw_answer),
+        attempt_number=attempt_number,
+        is_correct=independent_success,
+        answer_is_correct=answer_is_correct,
+        attempted_at=attempted_at,
+        context={
+            "answer_type": learning_item.answer_type,
+            "source_dataset": (
+                learning_item.source_dataset
+            ),
+            "predicted_success_probability": (
+                predicted_success_probability
+            ),
+            "previous_mastery": previous_mastery,
+            "updated_mastery": (
+                bkt_update.updated_mastery
+            ),
+            "bkt_source": bkt_update.source,
+        },
+    )
+
+    if knowledge_state is None:
+        knowledge_state = (
+            StudentKnowledgeState.objects.create(
+                enrollment=enrollment,
+                knowledge_component=knowledge_component,
+                mastery_prob=(
+                    bkt_update.updated_mastery
+                ),
+                source="trained_bkt",
+                source_version=get_bkt_version(),
+                evidence_count=1,
+                last_attempt_at=attempted_at,
+            )
+        )
+    else:
+        knowledge_state.mastery_prob = (
+            bkt_update.updated_mastery
+        )
+        knowledge_state.source = "trained_bkt"
+        knowledge_state.source_version = (
+            get_bkt_version()
+        )
+        knowledge_state.evidence_count += 1
+        knowledge_state.last_attempt_at = (
+            attempted_at
+        )
+        knowledge_state.save(
+            update_fields=[
+                "mastery_prob",
+                "source",
+                "source_version",
+                "evidence_count",
+                "last_attempt_at",
+                "last_updated_at",
+            ]
+        )
+
+    return RecordedAttempt(
+        attempt=attempt,
+        knowledge_state=knowledge_state,
+        session=session,
+        answer_is_correct=answer_is_correct,
+        independent_success=independent_success,
+        previous_mastery=previous_mastery,
+        updated_mastery=(
+            bkt_update.updated_mastery
+        ),
+    )
 
 def check_learning_item_answer(
     item: LearningItem,
