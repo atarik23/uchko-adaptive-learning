@@ -20,3 +20,19 @@ datasets/
 # Local model-training outputs
 training/artifacts/
 training/checkpoints/
+
+# Protected ML datasets and generated training data
+ml/data/
+data/raw/
+data/private/
+data/processed/
+*.csv
+*.parquet
+
+# Python and model-training cache
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Downloaded model bundles
+*.tar.gz

@@ -1,0 +1,1379 @@
+{
+  "version": "foundational-assist-bkt-v1",
+  "global": {
+    "initial_mastery": 0.6402611330489367,
+    "learn": 0.010117268408074694,
+    "guess": 0.33580122181385824,
+    "slip": 0.2422463346818856
+  },
+  "skills": {
+    "2.MD.B.5": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 39,
+      "students": 37
+    },
+    "3.MD.B.3": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 35,
+      "students": 35
+    },
+    "3.MD.C.6": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 12,
+      "students": 10
+    },
+    "3.MD.C.7a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 70,
+      "students": 65
+    },
+    "3.MD.C.7d": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 141,
+      "students": 135
+    },
+    "3.MD.D.8": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 9,
+      "students": 9
+    },
+    "3.NF.A.2a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 12,
+      "students": 12
+    },
+    "3.NF.A.2b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 7,
+      "students": 5
+    },
+    "3.NF.A.3d": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 1,
+      "students": 1
+    },
+    "3.OA.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 39,
+      "students": 37
+    },
+    "3.OA.B.5": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 38,
+      "students": 36
+    },
+    "4.G.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 380,
+      "students": 273
+    },
+    "4.G.A.2": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 962,
+      "students": 924
+    },
+    "4.MD.A.1": {
+      "initial_mastery": 0.3206487716967383,
+      "learn": 0.04542598970988176,
+      "guess": 0.15013016876140783,
+      "slip": 0.2683649409269283,
+      "source": "skill_specific",
+      "interactions": 2731,
+      "students": 544
+    },
+    "4.MD.A.3": {
+      "initial_mastery": 0.8440330099005189,
+      "learn": 0.001,
+      "guess": 0.39465214827260614,
+      "slip": 0.25393011267767257,
+      "source": "skill_specific",
+      "interactions": 3032,
+      "students": 1028
+    },
+    "4.NBT.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 273,
+      "students": 91
+    },
+    "4.NBT.B.6": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 56,
+      "students": 49
+    },
+    "4.NF.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 92,
+      "students": 92
+    },
+    "4.NF.A.2": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 89,
+      "students": 43
+    },
+    "4.NF.C.6": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 559,
+      "students": 284
+    },
+    "4.OA.B.4": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 23,
+      "students": 23
+    },
+    "5.G.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 5,
+      "students": 1
+    },
+    "5.MD.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 226,
+      "students": 113
+    },
+    "5.MD.B.2": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 49,
+      "students": 35
+    },
+    "5.MD.C.3b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 465,
+      "students": 455
+    },
+    "5.MD.C.4": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 800,
+      "students": 774
+    },
+    "5.MD.C.5a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 48,
+      "students": 27
+    },
+    "5.MD.C.5b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 552,
+      "students": 535
+    },
+    "5.NBT.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 171,
+      "students": 50
+    },
+    "5.NBT.A.2": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 672,
+      "students": 663
+    },
+    "5.NBT.A.3b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 2,
+      "students": 1
+    },
+    "5.NBT.B.5": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 917,
+      "students": 469
+    },
+    "5.NBT.B.6": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 660,
+      "students": 527
+    },
+    "5.NBT.B.7": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 643,
+      "students": 204
+    },
+    "5.NF.A.1": {
+      "initial_mastery": 0.22641179704991937,
+      "learn": 0.5,
+      "guess": 0.5,
+      "slip": 0.2845374082977935,
+      "source": "skill_specific",
+      "interactions": 1109,
+      "students": 1049
+    },
+    "5.NF.A.2": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 243,
+      "students": 238
+    },
+    "5.NF.B.3": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 335,
+      "students": 150
+    },
+    "5.NF.B.4a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 457,
+      "students": 129
+    },
+    "5.NF.B.4b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 190,
+      "students": 183
+    },
+    "5.NF.B.5a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 264,
+      "students": 138
+    },
+    "5.NF.B.6": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 409,
+      "students": 407
+    },
+    "5.NF.B.7a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 21,
+      "students": 21
+    },
+    "5.NF.B.7b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 40,
+      "students": 36
+    },
+    "6.EE.A.1": {
+      "initial_mastery": 0.5836450589565668,
+      "learn": 0.03441504172895026,
+      "guess": 0.3955747758964444,
+      "slip": 0.18026531588864533,
+      "source": "skill_specific",
+      "interactions": 20457,
+      "students": 2140
+    },
+    "6.EE.A.2a": {
+      "initial_mastery": 0.38157601139009095,
+      "learn": 0.09388642288163317,
+      "guess": 0.2445148770938229,
+      "slip": 0.14720185670976127,
+      "source": "skill_specific",
+      "interactions": 2634,
+      "students": 1177
+    },
+    "6.EE.A.2b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 74,
+      "students": 36
+    },
+    "6.EE.A.2c": {
+      "initial_mastery": 0.8689628147654788,
+      "learn": 0.03475486130181411,
+      "guess": 0.2315686767407409,
+      "slip": 0.12722964146543456,
+      "source": "skill_specific",
+      "interactions": 9008,
+      "students": 1205
+    },
+    "6.EE.A.3": {
+      "initial_mastery": 0.6450313978807218,
+      "learn": 0.001,
+      "guess": 0.35850707448852326,
+      "slip": 0.2298234651420159,
+      "source": "skill_specific",
+      "interactions": 6641,
+      "students": 1597
+    },
+    "6.EE.A.4": {
+      "initial_mastery": 0.29143784051796723,
+      "learn": 0.13372211203563802,
+      "guess": 0.48086571427364505,
+      "slip": 0.15210279961791223,
+      "source": "skill_specific",
+      "interactions": 6706,
+      "students": 1354
+    },
+    "6.EE.B.5": {
+      "initial_mastery": 0.7692013651991633,
+      "learn": 0.02303554775968092,
+      "guess": 0.33339886537395724,
+      "slip": 0.16429297082497432,
+      "source": "skill_specific",
+      "interactions": 16171,
+      "students": 2883
+    },
+    "6.EE.B.6": {
+      "initial_mastery": 0.5657313145206172,
+      "learn": 0.03627804916649219,
+      "guess": 0.331347653476911,
+      "slip": 0.17404866789119403,
+      "source": "skill_specific",
+      "interactions": 16564,
+      "students": 2184
+    },
+    "6.EE.B.7": {
+      "initial_mastery": 0.6207740968882665,
+      "learn": 0.02578932118844459,
+      "guess": 0.3556455516787144,
+      "slip": 0.17092534969033737,
+      "source": "skill_specific",
+      "interactions": 24928,
+      "students": 1725
+    },
+    "6.EE.B.8": {
+      "initial_mastery": 0.6031248138932988,
+      "learn": 0.139453748068806,
+      "guess": 0.31593816175111133,
+      "slip": 0.2715869457221648,
+      "source": "skill_specific",
+      "interactions": 6368,
+      "students": 968
+    },
+    "6.EE.C.9": {
+      "initial_mastery": 0.509777725954065,
+      "learn": 0.001,
+      "guess": 0.2748405732953525,
+      "slip": 0.20886353051669768,
+      "source": "skill_specific",
+      "interactions": 4890,
+      "students": 1115
+    },
+    "6.G.A.1": {
+      "initial_mastery": 0.5075214246313859,
+      "learn": 0.004188478974089579,
+      "guess": 0.35539244210727566,
+      "slip": 0.2881886173050441,
+      "source": "skill_specific",
+      "interactions": 42513,
+      "students": 3097
+    },
+    "6.G.A.2": {
+      "initial_mastery": 0.6260066642768058,
+      "learn": 0.001,
+      "guess": 0.19055519262959408,
+      "slip": 0.3323026761128589,
+      "source": "skill_specific",
+      "interactions": 4841,
+      "students": 1496
+    },
+    "6.G.A.3": {
+      "initial_mastery": 0.47160206228425283,
+      "learn": 0.18796845003677629,
+      "guess": 0.001,
+      "slip": 0.17135746197489315,
+      "source": "skill_specific",
+      "interactions": 1445,
+      "students": 765
+    },
+    "6.G.A.4": {
+      "initial_mastery": 0.5565376417956109,
+      "learn": 0.004921080616345368,
+      "guess": 0.3604939458003962,
+      "slip": 0.31959834044418395,
+      "source": "skill_specific",
+      "interactions": 14860,
+      "students": 1330
+    },
+    "6.NS.A.1": {
+      "initial_mastery": 0.6435183757151085,
+      "learn": 0.004863338282853458,
+      "guess": 0.3708452840995284,
+      "slip": 0.2550993371442172,
+      "source": "skill_specific",
+      "interactions": 48174,
+      "students": 2229
+    },
+    "6.NS.B.2": {
+      "initial_mastery": 0.8709098066049865,
+      "learn": 0.042804275087423044,
+      "guess": 0.4149395893273807,
+      "slip": 0.15929641789198168,
+      "source": "skill_specific",
+      "interactions": 6427,
+      "students": 1459
+    },
+    "6.NS.B.3": {
+      "initial_mastery": 0.7385773416279922,
+      "learn": 0.004081981828085014,
+      "guess": 0.41871826486541613,
+      "slip": 0.20648044916632316,
+      "source": "skill_specific",
+      "interactions": 31006,
+      "students": 1585
+    },
+    "6.NS.B.4": {
+      "initial_mastery": 0.3031093402572717,
+      "learn": 0.13702736733613632,
+      "guess": 0.4379025309657539,
+      "slip": 0.1691300026054429,
+      "source": "skill_specific",
+      "interactions": 4370,
+      "students": 624
+    },
+    "6.NS.C.5": {
+      "initial_mastery": 0.6935330198800059,
+      "learn": 0.07544027314300365,
+      "guess": 0.40676481171198525,
+      "slip": 0.1348859576149744,
+      "source": "skill_specific",
+      "interactions": 10812,
+      "students": 1719
+    },
+    "6.NS.C.6a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 391,
+      "students": 357
+    },
+    "6.NS.C.6c": {
+      "initial_mastery": 0.6123545911808989,
+      "learn": 0.5,
+      "guess": 0.001,
+      "slip": 0.3481187429004511,
+      "source": "skill_specific",
+      "interactions": 3887,
+      "students": 1783
+    },
+    "6.NS.C.7a": {
+      "initial_mastery": 0.7471517780479272,
+      "learn": 0.001,
+      "guess": 0.5,
+      "slip": 0.17113483812153962,
+      "source": "skill_specific",
+      "interactions": 7463,
+      "students": 1399
+    },
+    "6.NS.C.7b": {
+      "initial_mastery": 0.5499030122061758,
+      "learn": 0.3036528939421876,
+      "guess": 0.5,
+      "slip": 0.06786227835321934,
+      "source": "skill_specific",
+      "interactions": 3440,
+      "students": 2124
+    },
+    "6.NS.C.7c": {
+      "initial_mastery": 0.43489064650171033,
+      "learn": 0.5,
+      "guess": 0.26246884056550746,
+      "slip": 0.11234752259751447,
+      "source": "skill_specific",
+      "interactions": 1440,
+      "students": 769
+    },
+    "6.NS.C.7d": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 622,
+      "students": 605
+    },
+    "6.NS.C.8": {
+      "initial_mastery": 0.5946439445596621,
+      "learn": 0.05639816024060594,
+      "guess": 0.2681142433787884,
+      "slip": 0.12845679715819483,
+      "source": "skill_specific",
+      "interactions": 2142,
+      "students": 915
+    },
+    "6.RP.A.1": {
+      "initial_mastery": 0.7394920071739656,
+      "learn": 0.001,
+      "guess": 0.27333913439839763,
+      "slip": 0.357976615183637,
+      "source": "skill_specific",
+      "interactions": 4184,
+      "students": 1460
+    },
+    "6.RP.A.2": {
+      "initial_mastery": 0.6310257082325245,
+      "learn": 0.015234876436457058,
+      "guess": 0.3980983980945097,
+      "slip": 0.1479348388120558,
+      "source": "skill_specific",
+      "interactions": 1317,
+      "students": 452
+    },
+    "6.RP.A.3a": {
+      "initial_mastery": 0.6752246532862658,
+      "learn": 0.00705605443965276,
+      "guess": 0.27925682171093347,
+      "slip": 0.29032617001014743,
+      "source": "skill_specific",
+      "interactions": 23467,
+      "students": 2882
+    },
+    "6.RP.A.3b": {
+      "initial_mastery": 0.730188727781623,
+      "learn": 0.0014877310055316359,
+      "guess": 0.4018507289010834,
+      "slip": 0.22739000169911944,
+      "source": "skill_specific",
+      "interactions": 64771,
+      "students": 2546
+    },
+    "6.RP.A.3c": {
+      "initial_mastery": 0.6374193824028282,
+      "learn": 0.01738645819142622,
+      "guess": 0.31755644874468464,
+      "slip": 0.21450765499917473,
+      "source": "skill_specific",
+      "interactions": 55570,
+      "students": 2323
+    },
+    "6.RP.A.3d": {
+      "initial_mastery": 0.6982578980241132,
+      "learn": 0.001,
+      "guess": 0.3315084808677848,
+      "slip": 0.27935830993849053,
+      "source": "skill_specific",
+      "interactions": 12333,
+      "students": 1437
+    },
+    "6.SP.A.1": {
+      "initial_mastery": 0.31406134550709053,
+      "learn": 0.001,
+      "guess": 0.4480203329028442,
+      "slip": 0.138739264656797,
+      "source": "skill_specific",
+      "interactions": 1406,
+      "students": 548
+    },
+    "6.SP.A.2": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 997,
+      "students": 459
+    },
+    "6.SP.A.3": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 574,
+      "students": 435
+    },
+    "6.SP.B.4": {
+      "initial_mastery": 0.6783484487176347,
+      "learn": 0.001,
+      "guess": 0.32949293048286227,
+      "slip": 0.3873980213661326,
+      "source": "skill_specific",
+      "interactions": 3911,
+      "students": 719
+    },
+    "6.SP.B.5a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 4,
+      "students": 4
+    },
+    "6.SP.B.5b": {
+      "initial_mastery": 0.7319749389080545,
+      "learn": 0.1712715858139379,
+      "guess": 0.5,
+      "slip": 0.053427029243212534,
+      "source": "skill_specific",
+      "interactions": 1364,
+      "students": 356
+    },
+    "6.SP.B.5c": {
+      "initial_mastery": 0.5761033307124133,
+      "learn": 0.038127500333323336,
+      "guess": 0.3480496581694354,
+      "slip": 0.22387761935227998,
+      "source": "skill_specific",
+      "interactions": 8020,
+      "students": 799
+    },
+    "6.SP.B.5d": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 35,
+      "students": 35
+    },
+    "7.EE.A.1": {
+      "initial_mastery": 0.4430004304258578,
+      "learn": 0.04016954295272105,
+      "guess": 0.24193372720294823,
+      "slip": 0.322546490991331,
+      "source": "skill_specific",
+      "interactions": 11854,
+      "students": 1816
+    },
+    "7.EE.A.2": {
+      "initial_mastery": 0.456003937644596,
+      "learn": 0.07472910568117251,
+      "guess": 0.2802520546519226,
+      "slip": 0.33589062813024095,
+      "source": "skill_specific",
+      "interactions": 8180,
+      "students": 2077
+    },
+    "7.EE.B.3": {
+      "initial_mastery": 0.6169027148507472,
+      "learn": 0.06653478089439611,
+      "guess": 0.23029179618133985,
+      "slip": 0.22151015171280242,
+      "source": "skill_specific",
+      "interactions": 2778,
+      "students": 715
+    },
+    "7.EE.B.4a": {
+      "initial_mastery": 0.522569540765563,
+      "learn": 0.018599650611444907,
+      "guess": 0.3428883008391765,
+      "slip": 0.23763900860246404,
+      "source": "skill_specific",
+      "interactions": 56849,
+      "students": 2104
+    },
+    "7.EE.B.4b": {
+      "initial_mastery": 0.31124113639504275,
+      "learn": 0.035476794427340835,
+      "guess": 0.4457741605966077,
+      "slip": 0.22135112549108335,
+      "source": "skill_specific",
+      "interactions": 12845,
+      "students": 1713
+    },
+    "7.G.A.1": {
+      "initial_mastery": 0.4663341256249843,
+      "learn": 0.008417747779489112,
+      "guess": 0.33490939725721375,
+      "slip": 0.3136019254668304,
+      "source": "skill_specific",
+      "interactions": 61700,
+      "students": 2406
+    },
+    "7.G.A.2": {
+      "initial_mastery": 0.37536914542749505,
+      "learn": 0.17218068106754095,
+      "guess": 0.35765988537890014,
+      "slip": 0.26515682936678114,
+      "source": "skill_specific",
+      "interactions": 7361,
+      "students": 1299
+    },
+    "7.G.A.3": {
+      "initial_mastery": 0.6019954949640771,
+      "learn": 0.3243081182387716,
+      "guess": 0.001,
+      "slip": 0.30359529341936514,
+      "source": "skill_specific",
+      "interactions": 1171,
+      "students": 846
+    },
+    "7.G.B.4": {
+      "initial_mastery": 0.6168670332373334,
+      "learn": 0.010608103451886484,
+      "guess": 0.27196970119467345,
+      "slip": 0.3154708599490803,
+      "source": "skill_specific",
+      "interactions": 60859,
+      "students": 1872
+    },
+    "7.G.B.5": {
+      "initial_mastery": 0.6367976415761671,
+      "learn": 0.046660737139180605,
+      "guess": 0.3825946384758884,
+      "slip": 0.13603283671874247,
+      "source": "skill_specific",
+      "interactions": 18513,
+      "students": 1793
+    },
+    "7.G.B.6": {
+      "initial_mastery": 0.6124409969977238,
+      "learn": 0.01464957091632476,
+      "guess": 0.1822746007274747,
+      "slip": 0.3111718782222317,
+      "source": "skill_specific",
+      "interactions": 23863,
+      "students": 1670
+    },
+    "7.NS.A.1a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 15,
+      "students": 15
+    },
+    "7.NS.A.1b": {
+      "initial_mastery": 0.9120472785141106,
+      "learn": 0.001,
+      "guess": 0.2214733370451628,
+      "slip": 0.23069980007206925,
+      "source": "skill_specific",
+      "interactions": 5644,
+      "students": 1575
+    },
+    "7.NS.A.1c": {
+      "initial_mastery": 0.5922769952010498,
+      "learn": 0.001,
+      "guess": 0.23728036673733957,
+      "slip": 0.29300410823367173,
+      "source": "skill_specific",
+      "interactions": 3016,
+      "students": 1128
+    },
+    "7.NS.A.1d": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 25659,
+      "students": 2003
+    },
+    "7.NS.A.2a": {
+      "initial_mastery": 0.5561268883922182,
+      "learn": 0.11516150542119878,
+      "guess": 0.16261474753862715,
+      "slip": 0.19386827428480607,
+      "source": "skill_specific",
+      "interactions": 2663,
+      "students": 843
+    },
+    "7.NS.A.2b": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 776,
+      "students": 243
+    },
+    "7.NS.A.2c": {
+      "initial_mastery": 0.42116777015030177,
+      "learn": 0.1970259001021116,
+      "guess": 0.22820119200321295,
+      "slip": 0.2047998746909412,
+      "source": "skill_specific",
+      "interactions": 27623,
+      "students": 1999
+    },
+    "7.NS.A.2d": {
+      "initial_mastery": 0.7399728742500146,
+      "learn": 0.0029297833917286647,
+      "guess": 0.49219711133421634,
+      "slip": 0.08470743873107325,
+      "source": "skill_specific",
+      "interactions": 2751,
+      "students": 1588
+    },
+    "7.RP.A.1": {
+      "initial_mastery": 0.6862756824811479,
+      "learn": 0.07238253834105039,
+      "guess": 0.270251375174986,
+      "slip": 0.24786558979575296,
+      "source": "skill_specific",
+      "interactions": 11256,
+      "students": 1843
+    },
+    "7.RP.A.2a": {
+      "initial_mastery": 0.5175242467607191,
+      "learn": 0.01999955440438711,
+      "guess": 0.39848054888358053,
+      "slip": 0.24327857292050456,
+      "source": "skill_specific",
+      "interactions": 47166,
+      "students": 2605
+    },
+    "7.RP.A.2b": {
+      "initial_mastery": 0.6026992845997905,
+      "learn": 0.06055712595395926,
+      "guess": 0.28950496766773787,
+      "slip": 0.23817855986806172,
+      "source": "skill_specific",
+      "interactions": 15536,
+      "students": 2249
+    },
+    "7.RP.A.2c": {
+      "initial_mastery": 0.6161722442191373,
+      "learn": 0.016497148324567217,
+      "guess": 0.308242075286181,
+      "slip": 0.2495261124076736,
+      "source": "skill_specific",
+      "interactions": 31860,
+      "students": 2322
+    },
+    "7.RP.A.2d": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 473,
+      "students": 390
+    },
+    "7.RP.A.3": {
+      "initial_mastery": 0.5977327064906569,
+      "learn": 0.003702400434357022,
+      "guess": 0.3019403456830684,
+      "slip": 0.3129258653147471,
+      "source": "skill_specific",
+      "interactions": 82296,
+      "students": 2470
+    },
+    "7.SP.A.1": {
+      "initial_mastery": 0.17024567348320338,
+      "learn": 0.05434488578659295,
+      "guess": 0.4101442685006103,
+      "slip": 0.12329456283781552,
+      "source": "skill_specific",
+      "interactions": 1607,
+      "students": 438
+    },
+    "7.SP.A.2": {
+      "initial_mastery": 0.7146587631242106,
+      "learn": 0.3246651580690272,
+      "guess": 0.16332099766313543,
+      "slip": 0.21473917243059792,
+      "source": "skill_specific",
+      "interactions": 1662,
+      "students": 414
+    },
+    "7.SP.B.3": {
+      "initial_mastery": 0.7199621993696946,
+      "learn": 0.2174653751520225,
+      "guess": 0.21388027629513268,
+      "slip": 0.14049897120761992,
+      "source": "skill_specific",
+      "interactions": 1224,
+      "students": 344
+    },
+    "7.SP.B.4": {
+      "initial_mastery": 0.4249211772151898,
+      "learn": 0.001,
+      "guess": 0.4043586048082537,
+      "slip": 0.22275634878859385,
+      "source": "skill_specific",
+      "interactions": 1816,
+      "students": 302
+    },
+    "7.SP.C.5": {
+      "initial_mastery": 0.8811598302116881,
+      "learn": 0.001,
+      "guess": 0.39103691149630987,
+      "slip": 0.24017923981118258,
+      "source": "skill_specific",
+      "interactions": 2715,
+      "students": 811
+    },
+    "7.SP.C.6": {
+      "initial_mastery": 0.6313552104473276,
+      "learn": 0.001,
+      "guess": 0.5,
+      "slip": 0.18115771143383994,
+      "source": "skill_specific",
+      "interactions": 1977,
+      "students": 872
+    },
+    "7.SP.C.7a": {
+      "initial_mastery": 0.7264290686339582,
+      "learn": 0.001,
+      "guess": 0.3461295786948145,
+      "slip": 0.2659232364080819,
+      "source": "skill_specific",
+      "interactions": 1578,
+      "students": 870
+    },
+    "7.SP.C.7b": {
+      "initial_mastery": 0.7486718200180167,
+      "learn": 0.001,
+      "guess": 0.5,
+      "slip": 0.11838758074111706,
+      "source": "skill_specific",
+      "interactions": 1451,
+      "students": 882
+    },
+    "7.SP.C.8a": {
+      "initial_mastery": 0.6080492833335909,
+      "learn": 0.001,
+      "guess": 0.2232700819889084,
+      "slip": 0.3823992273173293,
+      "source": "skill_specific",
+      "interactions": 1292,
+      "students": 539
+    },
+    "7.SP.C.8b": {
+      "initial_mastery": 0.8571121601444129,
+      "learn": 0.001,
+      "guess": 0.27072759626882614,
+      "slip": 0.24488831995338498,
+      "source": "skill_specific",
+      "interactions": 5210,
+      "students": 997
+    },
+    "7.SP.C.8c": {
+      "initial_mastery": 0.42166509063984503,
+      "learn": 0.06005342623819179,
+      "guess": 0.2085846455468669,
+      "slip": 0.16958606262490103,
+      "source": "skill_specific",
+      "interactions": 1676,
+      "students": 533
+    },
+    "8.EE.A.1": {
+      "initial_mastery": 0.6889740609648802,
+      "learn": 0.001,
+      "guess": 0.34024453829571755,
+      "slip": 0.21187168990934307,
+      "source": "skill_specific",
+      "interactions": 6452,
+      "students": 750
+    },
+    "8.EE.A.2": {
+      "initial_mastery": 0.7247414209183461,
+      "learn": 0.029314481485809094,
+      "guess": 0.19781467776247902,
+      "slip": 0.19778587045455356,
+      "source": "skill_specific",
+      "interactions": 8121,
+      "students": 518
+    },
+    "8.EE.A.3": {
+      "initial_mastery": 0.5536619665010817,
+      "learn": 0.001,
+      "guess": 0.40923115638391755,
+      "slip": 0.20203153848610228,
+      "source": "skill_specific",
+      "interactions": 3031,
+      "students": 660
+    },
+    "8.EE.A.4": {
+      "initial_mastery": 0.6128555049356786,
+      "learn": 0.001,
+      "guess": 0.47761985398423945,
+      "slip": 0.18561363862982758,
+      "source": "skill_specific",
+      "interactions": 1508,
+      "students": 511
+    },
+    "8.EE.B.5": {
+      "initial_mastery": 0.4225305760366906,
+      "learn": 0.5,
+      "guess": 0.23231088670180491,
+      "slip": 0.27761578978001816,
+      "source": "skill_specific",
+      "interactions": 1227,
+      "students": 664
+    },
+    "8.EE.B.6": {
+      "initial_mastery": 0.48395853567076247,
+      "learn": 0.02118996194333557,
+      "guess": 0.29405265500362726,
+      "slip": 0.25242827480008645,
+      "source": "skill_specific",
+      "interactions": 6307,
+      "students": 928
+    },
+    "8.EE.C.7a": {
+      "initial_mastery": 0.6246098614631519,
+      "learn": 0.001,
+      "guess": 0.5,
+      "slip": 0.1905763512976933,
+      "source": "skill_specific",
+      "interactions": 6523,
+      "students": 729
+    },
+    "8.EE.C.7b": {
+      "initial_mastery": 0.5670397458254817,
+      "learn": 0.021937541979105864,
+      "guess": 0.2688574582918472,
+      "slip": 0.24574091682994967,
+      "source": "skill_specific",
+      "interactions": 23592,
+      "students": 951
+    },
+    "8.EE.C.8a": {
+      "initial_mastery": 0.5886946302425466,
+      "learn": 0.001,
+      "guess": 0.1512346443011415,
+      "slip": 0.28397803924037646,
+      "source": "skill_specific",
+      "interactions": 3546,
+      "students": 677
+    },
+    "8.EE.C.8b": {
+      "initial_mastery": 0.7298951496384052,
+      "learn": 0.001,
+      "guess": 0.21897175097262903,
+      "slip": 0.21799095539028193,
+      "source": "skill_specific",
+      "interactions": 3790,
+      "students": 825
+    },
+    "8.EE.C.8c": {
+      "initial_mastery": 0.5921204355480807,
+      "learn": 0.004404011205810288,
+      "guess": 0.28391772374718993,
+      "slip": 0.2716148377105121,
+      "source": "skill_specific",
+      "interactions": 8250,
+      "students": 757
+    },
+    "8.F.A.1": {
+      "initial_mastery": 0.5972317517870508,
+      "learn": 0.001,
+      "guess": 0.44124509826084163,
+      "slip": 0.24074203245482764,
+      "source": "skill_specific",
+      "interactions": 3977,
+      "students": 610
+    },
+    "8.F.A.2": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 593,
+      "students": 358
+    },
+    "8.F.A.3": {
+      "initial_mastery": 0.42613800921042416,
+      "learn": 0.08804401854855454,
+      "guess": 0.3371248401606714,
+      "slip": 0.12235887773129178,
+      "source": "skill_specific",
+      "interactions": 1423,
+      "students": 353
+    },
+    "8.F.B.4": {
+      "initial_mastery": 0.44507801250397205,
+      "learn": 0.030439333550957005,
+      "guess": 0.3427261741720174,
+      "slip": 0.2299231336115821,
+      "source": "skill_specific",
+      "interactions": 12483,
+      "students": 966
+    },
+    "8.F.B.5": {
+      "initial_mastery": 0.6689719630526625,
+      "learn": 0.025249131941912178,
+      "guess": 0.38741858950976704,
+      "slip": 0.15002151347557932,
+      "source": "skill_specific",
+      "interactions": 3037,
+      "students": 607
+    },
+    "8.G.A.1a": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 828,
+      "students": 599
+    },
+    "8.G.A.1b": {
+      "initial_mastery": 0.3804430850038601,
+      "learn": 0.2376970434865536,
+      "guess": 0.39996339273987086,
+      "slip": 0.1101673474358314,
+      "source": "skill_specific",
+      "interactions": 4381,
+      "students": 904
+    },
+    "8.G.A.2": {
+      "initial_mastery": 0.8025449198232009,
+      "learn": 0.05089740057955951,
+      "guess": 0.5,
+      "slip": 0.22873911552489917,
+      "source": "skill_specific",
+      "interactions": 2591,
+      "students": 730
+    },
+    "8.G.A.3": {
+      "initial_mastery": 0.28186102155647436,
+      "learn": 0.11465455454482622,
+      "guess": 0.3509526910996035,
+      "slip": 0.1841442034191077,
+      "source": "skill_specific",
+      "interactions": 4221,
+      "students": 794
+    },
+    "8.G.A.4": {
+      "initial_mastery": 0.6361983474614681,
+      "learn": 0.001,
+      "guess": 0.4275231115210953,
+      "slip": 0.284939939278378,
+      "source": "skill_specific",
+      "interactions": 4799,
+      "students": 818
+    },
+    "8.G.A.5": {
+      "initial_mastery": 0.8213600485304783,
+      "learn": 0.001,
+      "guess": 0.3526852585792099,
+      "slip": 0.2540240831144719,
+      "source": "skill_specific",
+      "interactions": 2435,
+      "students": 733
+    },
+    "8.G.B.6": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 118,
+      "students": 117
+    },
+    "8.G.B.7": {
+      "initial_mastery": 0.6951120934556679,
+      "learn": 0.001,
+      "guess": 0.23213909902419447,
+      "slip": 0.2720379480579489,
+      "source": "skill_specific",
+      "interactions": 6418,
+      "students": 594
+    },
+    "8.G.B.8": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 360,
+      "students": 310
+    },
+    "8.G.C.9": {
+      "initial_mastery": 0.7617656429909269,
+      "learn": 0.004333529766486158,
+      "guess": 0.1482349851218111,
+      "slip": 0.3049675129811328,
+      "source": "skill_specific",
+      "interactions": 16182,
+      "students": 549
+    },
+    "8.NS.A.1": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 526,
+      "students": 425
+    },
+    "8.NS.A.2": {
+      "initial_mastery": 0.6855655366667318,
+      "learn": 0.005040380218466429,
+      "guess": 0.2920241408444585,
+      "slip": 0.20401861335721583,
+      "source": "skill_specific",
+      "interactions": 5790,
+      "students": 586
+    },
+    "8.SP.A.1": {
+      "initial_mastery": 0.7994740121049125,
+      "learn": 0.06415242164998881,
+      "guess": 0.37672989931864675,
+      "slip": 0.16431870094072054,
+      "source": "skill_specific",
+      "interactions": 2352,
+      "students": 461
+    },
+    "8.SP.A.2": {
+      "initial_mastery": 0.9076186180369028,
+      "learn": 0.001,
+      "guess": 0.18112892209009995,
+      "slip": 0.22887811747246367,
+      "source": "skill_specific",
+      "interactions": 1059,
+      "students": 409
+    },
+    "8.SP.A.3": {
+      "initial_mastery": 0.7200398052969241,
+      "learn": 0.5,
+      "guess": 0.05866116951411067,
+      "slip": 0.3511707636503808,
+      "source": "skill_specific",
+      "interactions": 1207,
+      "students": 425
+    },
+    "8.SP.A.4": {
+      "initial_mastery": 0.6402611330489367,
+      "learn": 0.010117268408074694,
+      "guess": 0.33580122181385824,
+      "slip": 0.2422463346818856,
+      "source": "global_fallback",
+      "interactions": 438,
+      "students": 211
+    }
+  }
+}
