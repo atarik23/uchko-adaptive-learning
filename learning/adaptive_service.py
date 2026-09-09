@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+from decimal import Decimal, InvalidOperation
+from html import unescape
 
 from django.db.models import Q
+from django.utils.html import strip_tags
 
 from courses.models import (
     Enrollment,
@@ -284,6 +287,141 @@ def select_next_learning_item(
     )
 
 
+def check_learning_item_answer(
+    item: LearningItem,
+    submitted_answer: str,
+) -> bool:
+    if (
+        item.problem_type == "Fill-in-the-blank(s)"
+        and item.answer_type == "Numeric"
+    ):
+        return _check_numeric_answer(
+            submitted_answer=submitted_answer,
+            accepted_answers=item.fill_in_answers,
+        )
+
+    if (
+        item.problem_type
+        == "Multiple Choice (select 1)"
+        and item.answer_type == "Multiple Choice"
+    ):
+        return _check_multiple_choice_answer(
+            submitted_answer=submitted_answer,
+            options=item.multiple_choice_options,
+            accepted_answers=(
+                item.multiple_choice_answers
+            ),
+        )
+
+    raise ValueError(
+        "This learning item type is not currently supported."
+    )
+
+
+def find_correct_choice_index(
+    item: LearningItem,
+) -> int | None:
+    if (
+        item.problem_type
+        != "Multiple Choice (select 1)"
+        or item.answer_type != "Multiple Choice"
+    ):
+        return None
+
+    normalized_answers = {
+        _normalize_text(answer)
+        for answer in item.multiple_choice_answers
+    }
+
+    for index, option in enumerate(
+        item.multiple_choice_options
+    ):
+        if _normalize_text(option) in normalized_answers:
+            return index
+
+    return None
+
+
+def _check_numeric_answer(
+    submitted_answer: str,
+    accepted_answers: list,
+) -> bool:
+    submitted_number = _parse_decimal(
+        submitted_answer
+    )
+
+    if submitted_number is None:
+        return False
+
+    for accepted_answer in accepted_answers:
+        accepted_number = _parse_decimal(
+            accepted_answer
+        )
+
+        if accepted_number is None:
+            continue
+
+        tolerance = max(
+            Decimal("1e-9"),
+            abs(accepted_number) * Decimal("1e-9"),
+        )
+
+        if (
+            abs(submitted_number - accepted_number)
+            <= tolerance
+        ):
+            return True
+
+    return False
+
+
+def _check_multiple_choice_answer(
+    submitted_answer: str,
+    options: list,
+    accepted_answers: list,
+) -> bool:
+    try:
+        selected_index = int(submitted_answer)
+    except (TypeError, ValueError):
+        return False
+
+    if not 0 <= selected_index < len(options):
+        return False
+
+    selected_option = _normalize_text(
+        options[selected_index]
+    )
+
+    accepted_options = {
+        _normalize_text(answer)
+        for answer in accepted_answers
+    }
+
+    return selected_option in accepted_options
+
+
+def _parse_decimal(value) -> Decimal | None:
+    normalized = _normalize_text(value)
+
+    if not normalized:
+        return None
+
+    normalized = normalized.replace(",", "")
+
+    try:
+        return Decimal(normalized)
+    except InvalidOperation:
+        return None
+
+
+def _normalize_text(value) -> str:
+    return " ".join(
+        unescape(
+            strip_tags(str(value))
+        ).split()
+    ).strip().casefold()
+
+
 def _candidate_items(
     items,
     components: list[KnowledgeComponent],
@@ -311,16 +449,19 @@ def _has_usable_answer(item: LearningItem) -> bool:
         item.problem_type == "Fill-in-the-blank(s)"
         and item.answer_type == "Numeric"
     ):
-        return bool(item.fill_in_answers)
+        return any(
+            _parse_decimal(answer) is not None
+            for answer in item.fill_in_answers
+        )
 
     if (
         item.problem_type
         == "Multiple Choice (select 1)"
         and item.answer_type == "Multiple Choice"
     ):
-        return bool(
-            item.multiple_choice_options
-            and item.multiple_choice_answers
+        return (
+            find_correct_choice_index(item)
+            is not None
         )
 
     return False
