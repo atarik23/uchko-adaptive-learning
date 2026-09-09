@@ -1,9 +1,27 @@
 from django.urls import path
-
 from . import views
 
 app_name = "courses"
 
 urlpatterns = [
-    path("enroll/", views.enroll_view, name="enroll"),
+    path(
+        "professor/dashboard/",
+        views.professor_dashboard_view,
+        name="professor_dashboard",
+    ),
+    path(
+        "professor/students/<int:enrollment_id>/",
+        views.professor_student_detail_view,
+        name="professor_student_detail",
+    ),
+    path(
+        "student/dashboard/",
+        views.student_dashboard_view,
+        name="student_dashboard",
+    ),
+    path(
+        "enroll/",
+        views.enroll_view,
+        name="enroll",
+    ),
 ]

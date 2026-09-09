@@ -2,6 +2,7 @@ import secrets
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from accounts.models import User
@@ -172,7 +173,27 @@ class StudentKnowledgeState(models.Model):
     )
 
     mastery_prob = models.FloatField(
-        default=0.0,
+        null=True,
+        blank=True,
+        default=None,
+        validators=[
+            MinValueValidator(0.0),
+            MaxValueValidator(1.0),
+        ],
+    )
+
+    source = models.CharField(
+        max_length=100,
+        default="unknown",
+    )
+
+    source_version = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    evidence_count = models.PositiveIntegerField(
+        default=0,
     )
 
     last_attempt_at = models.DateTimeField(
@@ -230,11 +251,47 @@ class LearningAttempt(models.Model):
     )
 
     session = models.ForeignKey(
-    "LearningSession",
-    null=True,
-    blank=True,
-    on_delete=models.SET_NULL,
-    related_name="learning_attempts",
+        "LearningSession",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="learning_attempts",
+    )
+
+    external_question_id = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+
+    question_type = models.CharField(
+        max_length=50,
+        blank=True,
+    )
+
+    student_answer = models.TextField(
+        blank=True,
+    )
+
+    score = models.FloatField(
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(0.0),
+            MaxValueValidator(1.0),
+        ],
+    )
+
+    response_time_ms = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+    )
+
+    hint_count = models.PositiveIntegerField(
+        default=0,
+    )
+
+    attempt_number = models.PositiveIntegerField(
+        default=1,
     )
 
     is_correct = models.BooleanField()
@@ -254,7 +311,19 @@ class LearningAttempt(models.Model):
                 raise ValidationError(
                     {
                         "knowledge_component": (
-                            "The knowledge component must belong to the same course as the enrollment."
+                            "The knowledge component must belong to the "
+                            "same course as the enrollment."
+                        )
+                    }
+                )
+
+        if self.session_id and self.enrollment_id:
+            if self.session.enrollment_id != self.enrollment_id:
+                raise ValidationError(
+                    {
+                        "session": (
+                            "The learning attempt and session must belong "
+                            "to the same enrollment."
                         )
                     }
                 )
@@ -285,6 +354,18 @@ class LearningSession(models.Model):
         blank=True,
     )
 
+    is_active = models.BooleanField(
+        default=True,
+    )
+
+    goal_component = models.ForeignKey(
+        KnowledgeComponent,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="goal_sessions",
+    )
+
     duration_seconds = models.IntegerField(
         null=True,
         blank=True,
@@ -298,25 +379,68 @@ class LearningSession(models.Model):
     def clean(self):
         super().clean()
 
-        if self.pk:
-            attempts = self.learning_attempts.all()
-            if attempts.exists():
-                for attempt in attempts:
-                    if attempt.enrollment.course_id != self.enrollment.course_id:
-                        raise ValidationError(
-                            "All attempts in a session must belong to the same course as the session's enrollment."
+        # Sesija ne može završiti prije nego što je počela.
+        if self.started_at and self.ended_at:
+            if self.ended_at < self.started_at:
+                raise ValidationError(
+                    {
+                        "ended_at": (
+                            "The session cannot end before it starts."
                         )
+                    }
+                )
+
+        # Završena sesija više ne može biti označena kao aktivna.
+        if self.ended_at and self.is_active:
+            raise ValidationError(
+                {
+                    "is_active": (
+                        "A completed session cannot remain active."
+                    )
+                }
+            )
+
+        # Ciljna komponenta mora pripadati istom kursu.
+        if (
+            self.goal_component_id
+            and self.enrollment_id
+            and self.goal_component.course_id != self.enrollment.course_id
+        ):
+            raise ValidationError(
+                {
+                    "goal_component": (
+                        "The goal component must belong to the same "
+                        "course as the session."
+                    )
+                }
+            )
+
+        # Svi povezani pokušaji moraju pripadati istom enrollmentu.
+        if self.pk and self.enrollment_id:
+            for attempt in self.learning_attempts.all():
+                if attempt.enrollment_id != self.enrollment_id:
+                    raise ValidationError(
+                        "All attempts in a session must belong to the "
+                        "same enrollment as the session."
+                    )
 
     def save(self, *args, **kwargs):
         if self.started_at and self.ended_at:
             delta = self.ended_at - self.started_at
             self.duration_seconds = int(delta.total_seconds())
+        else:
+            self.duration_seconds = None
 
         self.full_clean()
         return super().save(*args, **kwargs)
 
     def __str__(self):
-        duration = f"{self.duration_seconds}s" if self.duration_seconds is not None else "ongoing"
+        duration = (
+            f"{self.duration_seconds}s"
+            if self.duration_seconds is not None
+            else "ongoing"
+        )
+
         return (
             f"{self.enrollment.student.username} — "
             f"{self.enrollment.course.code} — "

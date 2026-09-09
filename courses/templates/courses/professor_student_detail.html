@@ -1,0 +1,258 @@
+{% extends "learning/base.html" %}
+
+{% block title %}Student Details — Uchko{% endblock %}
+
+{% block content %}
+<section class="card">
+    <p>
+        <a href="{% url 'courses:professor_dashboard' %}">
+            ← Back to Professor Dashboard
+        </a>
+    </p>
+
+    <div class="card-title">
+        Student Details
+    </div>
+
+    <p>
+        <strong>Student:</strong>
+        {% if student.first_name or student.last_name %}
+            {{ student.first_name }} {{ student.last_name }}
+        {% else %}
+            {{ student.username }}
+        {% endif %}
+    </p>
+
+    <p>
+        <strong>Username:</strong>
+        {{ student.username }}
+    </p>
+
+    <p>
+        <strong>Email:</strong>
+        {{ student.email|default:"Not provided" }}
+    </p>
+
+    <p>
+        <strong>Course:</strong>
+        {{ course.code }} — {{ course.name }}
+    </p>
+
+    <p>
+        <strong>Enrollment:</strong>
+        {% if enrollment.is_active %}
+            Active
+        {% else %}
+            Inactive
+        {% endif %}
+    </p>
+</section>
+
+<section class="card" style="margin-top: 1rem;">
+    <div class="card-title">Summary</div>
+
+    <p>
+        <strong>Total attempts:</strong>
+        {{ attempt_statistics.total_attempts }}
+    </p>
+
+    <p>
+        <strong>Average accuracy:</strong>
+        {% if attempt_statistics.average_accuracy is not None %}
+            {% widthratio attempt_statistics.average_accuracy 1 100 %}%
+        {% else %}
+            No attempts
+        {% endif %}
+    </p>
+
+    <p>
+        <strong>Last activity:</strong>
+        {% if attempt_statistics.last_activity %}
+            {{ attempt_statistics.last_activity|date:"d M Y, H:i" }}
+        {% else %}
+            No activity
+        {% endif %}
+    </p>
+</section>
+
+<section class="card" style="margin-top: 1rem;">
+    <div class="card-title">Knowledge State</div>
+
+    {% if knowledge_states %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>External ID</th>
+                        <th>Mastery</th>
+                        <th>Evidence</th>
+                        <th>Source</th>
+                        <th>Last attempt</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for state in knowledge_states %}
+                        <tr>
+                            <td>{{ state.knowledge_component.name }}</td>
+                            <td>{{ state.knowledge_component.external_id }}</td>
+
+                            <td>
+                                {% if state.mastery_prob is not None %}
+                                    {% widthratio state.mastery_prob 1 100 %}%
+                                {% else %}
+                                    Not estimated
+                                {% endif %}
+                            </td>
+
+                            <td>{{ state.evidence_count }}</td>
+                            <td>
+                                {{ state.source }}
+                                {% if state.source_version %}
+                                    ({{ state.source_version }})
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if state.last_attempt_at %}
+                                    {{ state.last_attempt_at|date:"d M Y, H:i" }}
+                                {% else %}
+                                    No attempts
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No knowledge-state estimates are available.</p>
+    {% endif %}
+</section>
+
+<section class="card" style="margin-top: 1rem;">
+    <div class="card-title">Recent Attempts</div>
+
+    {% if recent_attempts %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Question</th>
+                        <th>Correct</th>
+                        <th>Score</th>
+                        <th>Response time</th>
+                        <th>Hints</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for attempt in recent_attempts %}
+                        <tr>
+                            <td>{{ attempt.knowledge_component.name }}</td>
+
+                            <td>
+                                {{ attempt.external_question_id|default:"Not recorded" }}
+                            </td>
+
+                            <td>
+                                {% if attempt.is_correct %}
+                                    Yes
+                                {% else %}
+                                    No
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if attempt.score is not None %}
+                                    {% widthratio attempt.score 1 100 %}%
+                                {% else %}
+                                    Not recorded
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if attempt.response_time_ms is not None %}
+                                    {{ attempt.response_time_ms }} ms
+                                {% else %}
+                                    Not recorded
+                                {% endif %}
+                            </td>
+
+                            <td>{{ attempt.hint_count }}</td>
+                            <td>{{ attempt.attempted_at|date:"d M Y, H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No learning attempts have been recorded.</p>
+    {% endif %}
+</section>
+
+<section class="card" style="margin-top: 1rem;">
+    <div class="card-title">Learning Sessions</div>
+
+    {% if learning_sessions %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Started</th>
+                        <th>Ended</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                        <th>Goal</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for session in learning_sessions %}
+                        <tr>
+                            <td>{{ session.started_at|date:"d M Y, H:i" }}</td>
+
+                            <td>
+                                {% if session.ended_at %}
+                                    {{ session.ended_at|date:"d M Y, H:i" }}
+                                {% else %}
+                                    Ongoing
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if session.is_active %}
+                                    Active
+                                {% else %}
+                                    Completed
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if session.duration_seconds is not None %}
+                                    {{ session.duration_seconds }} seconds
+                                {% else %}
+                                    Ongoing
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if session.goal_component %}
+                                    {{ session.goal_component.name }}
+                                {% else %}
+                                    No goal
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No learning sessions have been recorded.</p>
+    {% endif %}
+</section>
+{% endblock %}

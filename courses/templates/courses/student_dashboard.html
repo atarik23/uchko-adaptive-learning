@@ -1,0 +1,264 @@
+{% extends "learning/base.html" %}
+
+{% block title %}My Learning — Uchko{% endblock %}
+
+{% block content %}
+<section class="card">
+    <div class="card-title">My Learning</div>
+
+    <p>
+        Welcome,
+        {{ request.user.first_name|default:request.user.username }}.
+    </p>
+
+    <p>
+        This page contains only your courses and learning data.
+    </p>
+</section>
+
+{% if enrollments %}
+    {% for enrollment in enrollments %}
+        <section class="card" style="margin-top: 1rem;">
+            <div class="card-title">
+                {{ enrollment.course.code }} —
+                {{ enrollment.course.name }}
+            </div>
+
+            <p>
+                <strong>Professor:</strong>
+                {% if enrollment.course.professor.first_name or enrollment.course.professor.last_name %}
+                    {{ enrollment.course.professor.first_name }}
+                    {{ enrollment.course.professor.last_name }}
+                {% else %}
+                    {{ enrollment.course.professor.username }}
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Enrollment:</strong>
+                {% if enrollment.is_active %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+            </p>
+
+            <h3>Summary</h3>
+
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Attempts</th>
+                            <th>Accuracy</th>
+                            <th>Sessions</th>
+                            <th>Last activity</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>{{ enrollment.attempt_count }}</td>
+
+                            <td>
+                                {% if enrollment.average_accuracy is not None %}
+                                    {% widthratio enrollment.average_accuracy 1 100 %}%
+                                {% else %}
+                                    No attempts
+                                {% endif %}
+                            </td>
+
+                            <td>{{ enrollment.session_count }}</td>
+
+                            <td>
+                                {% if enrollment.last_activity %}
+                                    {{ enrollment.last_activity|date:"d M Y, H:i" }}
+                                {% else %}
+                                    No activity
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Knowledge State</h3>
+
+            {% if enrollment.knowledge_states.all %}
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Mastery</th>
+                                <th>Evidence</th>
+                                <th>Source</th>
+                                <th>Last attempt</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for state in enrollment.knowledge_states.all %}
+                                <tr>
+                                    <td>
+                                        {{ state.knowledge_component.name }}
+                                    </td>
+
+                                    <td>
+                                        {% if state.mastery_prob is not None %}
+                                            {% widthratio state.mastery_prob 1 100 %}%
+                                        {% else %}
+                                            Not estimated
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ state.evidence_count }}</td>
+                                    <td>{{ state.source }}</td>
+
+                                    <td>
+                                        {% if state.last_attempt_at %}
+                                            {{ state.last_attempt_at|date:"d M Y, H:i" }}
+                                        {% else %}
+                                            No attempts
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No knowledge-state estimates are available.</p>
+            {% endif %}
+
+            <h3>Recent Attempts</h3>
+
+            {% if enrollment.learning_attempts.all %}
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Correct</th>
+                                <th>Score</th>
+                                <th>Response time</th>
+                                <th>Hints</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for attempt in enrollment.learning_attempts.all|slice:":10" %}
+                                <tr>
+                                    <td>
+                                        {{ attempt.knowledge_component.name }}
+                                    </td>
+
+                                    <td>
+                                        {% if attempt.is_correct %}
+                                            Yes
+                                        {% else %}
+                                            No
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if attempt.score is not None %}
+                                            {% widthratio attempt.score 1 100 %}%
+                                        {% else %}
+                                            Not recorded
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if attempt.response_time_ms is not None %}
+                                            {{ attempt.response_time_ms }} ms
+                                        {% else %}
+                                            Not recorded
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ attempt.hint_count }}</td>
+                                    <td>{{ attempt.attempted_at|date:"d M Y, H:i" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No learning attempts have been recorded.</p>
+            {% endif %}
+
+            <h3>Recent Sessions</h3>
+
+            {% if enrollment.learning_sessions.all %}
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Started</th>
+                                <th>Ended</th>
+                                <th>Status</th>
+                                <th>Duration</th>
+                                <th>Goal</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for session in enrollment.learning_sessions.all|slice:":10" %}
+                                <tr>
+                                    <td>{{ session.started_at|date:"d M Y, H:i" }}</td>
+
+                                    <td>
+                                        {% if session.ended_at %}
+                                            {{ session.ended_at|date:"d M Y, H:i" }}
+                                        {% else %}
+                                            Ongoing
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if session.is_active %}
+                                            Active
+                                        {% else %}
+                                            Completed
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if session.duration_seconds is not None %}
+                                            {{ session.duration_seconds }} seconds
+                                        {% else %}
+                                            Ongoing
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if session.goal_component %}
+                                            {{ session.goal_component.name }}
+                                        {% else %}
+                                            No goal
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>No learning sessions have been recorded.</p>
+            {% endif %}
+        </section>
+    {% endfor %}
+{% else %}
+    <section class="card" style="margin-top: 1rem;">
+        <p>You are not currently enrolled in a course.</p>
+
+        <p>
+            <a href="{% url 'courses:enroll' %}">
+                Enroll using a course code
+            </a>
+        </p>
+    </section>
+{% endif %}
+{% endblock %}

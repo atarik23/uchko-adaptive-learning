@@ -91,38 +91,66 @@
 <body>
     <header class="site-header">
         <div class="site-header-inner">
-            <a class="brand" href="{% url 'learning:account' %}">
-                Uchko
-            </a>
+
+            {% if request.user.is_authenticated and request.user.role == "professor" %}
+                <a class="brand" href="{% url 'courses:professor_dashboard' %}">
+                    Uchko
+                </a>
+            {% elif request.user.is_authenticated and request.user.role == "student" %}
+                <a class="brand" href="{% url 'learning:practice' %}">
+                    Uchko
+                </a>
+            {% else %}
+                <a class="brand" href="{% url 'accounts:login' %}">
+                    Uchko
+                </a>
+            {% endif %}
 
             <nav class="main-nav">
-                <a href="{% url 'learning:practice' %}"
-                   class="{% if active_tab == 'practice' %}active{% endif %}">
-                    Practice
-                </a>
-
-                <a href="{% url 'learning:progress' %}"
-                   class="{% if active_tab == 'progress' %}active{% endif %}">
-                    Progress
-                </a>
-
-                <a href="{% url 'learning:curriculum' %}"
-                   class="{% if active_tab == 'curriculum' %}active{% endif %}">
-                    Curriculum
-                </a>
-
-                <a href="{% url 'learning:settings' %}"
-                   class="{% if active_tab == 'settings' %}active{% endif %}">
-                    Settings
-                </a>
-
                 {% if request.user.is_authenticated %}
-                    <form action="{% url 'accounts:logout' %}" method="post" style="display: inline;">
-                         {% csrf_token %}
+
+                    {% if request.user.role == "student" %}
+                        <a href="{% url 'courses:student_dashboard' %}"
+                        class="{% if active_tab == 'student_dashboard' %}active{% endif %}">
+                            My Learning
+                        </a>
+                        
+                        <a href="{% url 'learning:practice' %}"
+                        class="{% if active_tab == 'practice' %}active{% endif %}">
+                            Practice
+                        </a>
+
+                        <a href="{% url 'learning:progress' %}"
+                        class="{% if active_tab == 'progress' %}active{% endif %}">
+                            Progress
+                        </a>
+
+                        <a href="{% url 'learning:curriculum' %}"
+                        class="{% if active_tab == 'curriculum' %}active{% endif %}">
+                            Curriculum
+                        </a>
+
+                        <a href="{% url 'learning:settings' %}"
+                        class="{% if active_tab == 'settings' %}active{% endif %}">
+                            Settings
+                        </a>
+
+                    {% elif request.user.role == "professor" %}
+                        <a href="{% url 'courses:professor_dashboard' %}"
+                        class="{% if active_tab == 'professor_dashboard' %}active{% endif %}">
+                            Professor Dashboard
+                        </a>
+                    {% endif %}
+
+                    <form action="{% url 'accounts:logout' %}"
+                        method="post"
+                        style="display: inline;">
+                        {% csrf_token %}
                         <button type="submit" class="nav-logout-btn">
                             Log out
                         </button>
                     </form>
+
                 {% endif %}
             </nav>
         </div>

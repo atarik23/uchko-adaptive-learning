@@ -7,3 +7,16 @@ db.sqlite3
 .vscode/
 .idea/
 .DS_Store
+
+# Runtime learning data
+data/cache/
+data/prod_event_logs.csv
+
+# Private datasets and local training data
+data/private/
+data/raw/
+datasets/
+
+# Local model-training outputs
+training/artifacts/
+training/checkpoints/
