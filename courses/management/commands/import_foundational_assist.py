@@ -23,38 +23,64 @@ DATASET_LICENSE = (
 )
 
 
-def parse_json_value(value):
-    if pd.isna(value):
-        return []
-
-    if isinstance(value, (list, dict)):
-        return value
-
-    text = str(value).strip()
-
-    if not text:
+def parse_list_value(value, delimiter=None):
+    if value is None:
         return []
 
     try:
-        return json.loads(text)
-    except (json.JSONDecodeError, TypeError):
+        if pd.isna(value):
+            return []
+    except (TypeError, ValueError):
         pass
 
-    try:
-        parsed = ast.literal_eval(text)
-    except (ValueError, SyntaxError):
-        return [text]
+    if isinstance(value, list):
+        parsed_values = value
+    elif isinstance(value, tuple):
+        parsed_values = list(value)
+    elif isinstance(value, set):
+        parsed_values = sorted(value)
+    elif isinstance(value, dict):
+        parsed_values = [value]
+    else:
+        text = str(value).strip()
 
-    if isinstance(parsed, tuple):
-        return list(parsed)
+        if not text:
+            return []
 
-    if isinstance(parsed, set):
-        return sorted(parsed)
+        try:
+            parsed = json.loads(text)
+        except (json.JSONDecodeError, TypeError):
+            try:
+                parsed = ast.literal_eval(text)
+            except (ValueError, SyntaxError):
+                parsed = text
 
-    if isinstance(parsed, (list, dict)):
-        return parsed
+        if isinstance(parsed, list):
+            parsed_values = parsed
+        elif isinstance(parsed, tuple):
+            parsed_values = list(parsed)
+        elif isinstance(parsed, set):
+            parsed_values = sorted(parsed)
+        else:
+            parsed_values = [parsed]
 
-    return [parsed]
+    normalized_values = []
+
+    for parsed_value in parsed_values:
+        if (
+            delimiter
+            and isinstance(parsed_value, str)
+            and delimiter in parsed_value
+        ):
+            normalized_values.extend(
+                part.strip()
+                for part in parsed_value.split(delimiter)
+                if part.strip()
+            )
+        else:
+            normalized_values.append(parsed_value)
+
+    return normalized_values
 
 
 def string_value(value, default=""):
@@ -331,24 +357,27 @@ class Command(BaseCommand):
                         "body": string_value(
                             row["Problem Body"]
                         ),
-                        "fill_in_options": parse_json_value(
-                            row["Fill-in Options"]
+                        "fill_in_options": parse_list_value(
+                            row["Fill-in Options"],
+                            delimiter="</p>,",
                         ),
-                        "fill_in_answers": parse_json_value(
-                            row["Fill-in Answers"]
+                        "fill_in_answers": parse_list_value(
+                            row["Fill-in Answers"],
                         ),
                         "multiple_choice_options": (
-                            parse_json_value(
+                            parse_list_value(
                                 row[
                                     "Multiple Choice Options"
-                                ]
+                                ],
+                                delimiter="||",
                             )
                         ),
                         "multiple_choice_answers": (
-                            parse_json_value(
+                            parse_list_value(
                                 row[
                                     "Multiple Choice Answers"
-                                ]
+                                ],
+                                delimiter="||",
                             )
                         ),
                         "primary_knowledge_component": (
