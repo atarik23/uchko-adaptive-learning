@@ -90,7 +90,7 @@ def professor_dashboard_view(request):
                 distinct=True,
             ),
             average_accuracy=Avg(
-                "learning_attempts__is_correct",
+                "learning_attempts__answer_is_correct",
             ),
             last_activity=Max(
                 "learning_attempts__attempted_at",
@@ -161,7 +161,7 @@ def professor_student_detail_view(request, enrollment_id):
 
     attempt_statistics = enrollment.learning_attempts.aggregate(
         total_attempts=Count("id"),
-        average_accuracy=Avg("is_correct"),
+        average_accuracy=Avg("answer_is_correct"),
         last_activity=Max("attempted_at"),
     )
 
@@ -196,7 +196,7 @@ def student_dashboard_view(request):
                 distinct=True,
             ),
             average_accuracy=Avg(
-                "learning_attempts__is_correct",
+                "learning_attempts__answer_is_correct",
             ),
             session_count=Count(
                 "learning_sessions",
