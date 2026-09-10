@@ -1,0 +1,53 @@
+{
+  "target": "target",
+  "categorical_features": [
+    "problem_id",
+    "problem_set_id",
+    "problem_type",
+    "answer_type",
+    "primary_skill"
+  ],
+  "numeric_features": [
+    "problem_part",
+    "skill_count",
+    "user_attempts_before",
+    "user_correct_before",
+    "user_accuracy_before",
+    "user_hints_before",
+    "user_saw_answer_before",
+    "previous_correct",
+    "previous_used_hint",
+    "hours_since_previous",
+    "skill_attempts_before",
+    "skill_correct_before",
+    "skill_accuracy_before"
+  ],
+  "model_features": [
+    "problem_id",
+    "problem_set_id",
+    "problem_type",
+    "answer_type",
+    "primary_skill",
+    "problem_part",
+    "skill_count",
+    "user_attempts_before",
+    "user_correct_before",
+    "user_accuracy_before",
+    "user_hints_before",
+    "user_saw_answer_before",
+    "previous_correct",
+    "previous_used_hint",
+    "hours_since_previous",
+    "skill_attempts_before",
+    "skill_correct_before",
+    "skill_accuracy_before"
+  ],
+  "random_seed": 42,
+  "train_students": 3500,
+  "validation_students": 750,
+  "test_students": 750,
+  "train_rows": 1185585,
+  "validation_rows": 253894,
+  "test_rows": 254468,
+  "global_train_probability": 0.6140732212367734
+}

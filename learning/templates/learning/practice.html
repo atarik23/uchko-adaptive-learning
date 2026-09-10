@@ -1,313 +1,276 @@
 {% extends "learning/base.html" %}
 {% load uchko_extras %}
 
-{% block title %}Uchko — Practice{% endblock %}
+{% block title %}Practice — Uchko{% endblock %}
 
 {% block content %}
 <div class="practice-page">
 
-    <!-- Goal summary and goal selection -->
-    <section class="row">
-        <div>
-            <div class="card">
-                <div class="card-title">Current goal</div>
+    {% if messages %}
+        {% for message in messages %}
+            <section class="flash
+                {% if message.tags == 'success' %}flash-success
+                {% elif message.tags == 'error' %}flash-error
+                {% elif message.tags == 'warning' %}flash-warning
+                {% else %}flash-info{% endif %}">
+                {{ message }}
+            </section>
+        {% endfor %}
+    {% endif %}
 
+    {% if setup_error %}
+        <section class="card">
+            <div class="card-title">
+                Practice is not available
+            </div>
+
+            <p>{{ setup_error }}</p>
+
+            <p class="muted">
+                Enroll in an active course containing imported
+                FoundationalASSIST learning items.
+            </p>
+        </section>
+
+    {% else %}
+        <section class="card">
+            <div class="card-title">
+                Adaptive practice
+            </div>
+
+            <p>
+                <strong>Course:</strong>
+                {{ course.code }} — {{ course.name }}
+            </p>
+
+            <p class="muted">
+                Uchko selects questions from your weakest skills
+                and targets a suitable probability of success.
+            </p>
+        </section>
+
+        {% if last_result %}
+            <section class="card" style="margin-top: 1rem;">
+                <div class="card-title">
+                    Previous answer
+                </div>
+
+                {% if last_result.answer_is_correct %}
+                    <div class="flash flash-success">
+                        Correct answer.
+                    </div>
+                {% else %}
+                    <div class="flash flash-error">
+                        The submitted answer was not correct.
+                    </div>
+                {% endif %}
+
+                <p>
+                    <strong>Skill:</strong>
+                    {{ last_result.skill_name }}
+                    <code>{{ last_result.skill_code }}</code>
+                </p>
+
+                <p>
+                    <strong>Mastery update:</strong>
+                    {{ last_result.previous_mastery|fmt2 }}
+                    →
+                    {{ last_result.updated_mastery|fmt2 }}
+                </p>
+
+                <p class="muted">
+                    Attempt number:
+                    {{ last_result.attempt_number }}
+                </p>
+            </section>
+        {% endif %}
+
+        {% if current_item %}
+            <section class="flash flash-info"
+                     style="margin-top: 1rem;">
                 <div>
-                    <b>{{ goal_name }}</b>
-                    <code>{{ goal_skill_id }}</code>
+                    <strong>Selected skill:</strong>
+                    {{ current_component.name }}
+                    <code>{{ current_component.external_id }}</code>
+                </div>
+
+                <div style="margin-top: 0.35rem;">
+                    <strong>Current mastery:</strong>
+                    {{ selection_mastery|fmt2 }}
+                </div>
+
+                <div style="margin-top: 0.35rem;">
+                    <strong>Predicted success:</strong>
+                    {{ success_probability|fmt2 }}
+                </div>
+
+                <div class="muted"
+                     style="margin-top: 0.35rem;">
+                    {{ selection_reason }}
+                </div>
+            </section>
+
+            <section class="q-card"
+                     style="margin-top: 1rem;">
+                <div class="card-title">
+                    Question
                 </div>
 
                 <div class="muted">
-                    Mastery change this session:
-                    <b>{{ delta_m|fmt_signed2 }}</b>
-                    (start {{ start_m|fmt2 }} → now {{ now_m|fmt2 }})
+                    Problem ID: {{ current_item.external_id }}
                 </div>
 
-                <div class="progress-bar" style="margin-top: 0.6rem;">
-                    <span style="width: {{ progress_value }}%;"></span>
+                <div class="q-prompt"
+                     style="margin-top: 1rem;">
+                    {{ current_item_body_html|safe }}
                 </div>
+            </section>
 
-                <div class="muted" style="margin-top: 0.3rem;">
-                    Progress toward mastery target: {{ goal_threshold|fmt2 }}
-                </div>
-
-                {% if goal_reached %}
-                    <div class="flash flash-success" style="margin-top: 0.7rem;">
-                        ✅ Goal achieved. Set a new goal, or continue for reinforcement.
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div>
-            <div class="card">
-                <div class="card-title">Change goal</div>
-
-                <form action="{% url 'learning:set_goal' %}" method="post">
+            <section class="btn-row"
+                     style="margin-top: 0.8rem;
+                            margin-bottom: 0.8rem;">
+                <form action="{% url 'learning:request_hint' %}"
+                      method="post">
                     {% csrf_token %}
 
-                    <label for="goal_skill_id">Goal skill</label>
-
-                    <select id="goal_skill_id" name="goal_skill_id">
-                        {% for opt in skill_options %}
-                            <option value="{{ opt.id }}"
-                                {% if opt.id == goal_skill_id %}selected{% endif %}>
-                                {{ opt.label }}
-                            </option>
-                        {% endfor %}
-                    </select>
-
-                    <div style="margin-top: 0.6rem;">
-                        <button type="submit" class="btn btn-primary">
-                            Save goal
-                        </button>
-                    </div>
+                    <button type="submit" class="btn">
+                        Request hint
+                    </button>
                 </form>
-            </div>
-        </div>
-    </section>
 
-    <!-- Practice mode controls -->
-    <section class="card card-tight">
-        <div class="card-title">Practice controls</div>
+                <span class="muted"
+                      style="align-self: center;">
+                    Hints used for this question:
+                    {{ hint_count }}
+                </span>
+            </section>
 
-        <form action="{% url 'learning:toggle_adaptive' %}"
-              method="post"
-              style="margin-bottom: 0.8rem;">
-            {% csrf_token %}
-
-            <label class="toggle">
-                <input type="checkbox"
-                       name="adaptive_mode"
-                       {% if adaptive_mode %}checked{% endif %}
-                       onchange="this.form.submit()">
-
-                Adaptive mode — automatically select skill and difficulty
-            </label>
-        </form>
-
-        {% if not adaptive_mode %}
-            <form action="{% url 'learning:set_manual' %}" method="post">
+            <form action="{% url 'learning:submit_answer' %}"
+                  method="post"
+                  class="card">
                 {% csrf_token %}
 
-                <div class="row-3">
-                    <div>
-                        <label for="manual_skill_id">Manual skill</label>
-
-                        <select id="manual_skill_id" name="manual_skill_id">
-                            {% for opt in skill_options %}
-                                <option value="{{ opt.id }}"
-                                    {% if opt.id == manual_skill_id %}selected{% endif %}>
-                                    {{ opt.label }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                {% if choice_rows %}
+                    <div class="card-title">
+                        Choose one answer
                     </div>
 
-                    <div>
-                        <label for="manual_difficulty">
-                            Manual difficulty
-                        </label>
+                    <div class="choices">
+                        {% for choice in choice_rows %}
+                            <label class="choice-label">
+                                <input
+                                    type="radio"
+                                    name="answer"
+                                    value="{{ choice.index }}"
+                                    required
+                                >
 
-                        <select id="manual_difficulty" name="manual_difficulty">
-                            {% for d in difficulty_options %}
-                                <option value="{{ d }}"
-                                    {% if d == manual_difficulty %}selected{% endif %}>
-                                    {{ d }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                                <span>
+                                    {{ choice.html|safe }}
+                                </span>
+                            </label>
+                        {% endfor %}
                     </div>
 
-                    <div>
-                        <button class="btn btn-block" type="submit">
-                            Apply selection
-                        </button>
-                    </div>
-                </div>
-            </form>
-        {% else %}
-            <div class="muted">
-                Manual skill and difficulty controls are hidden while Adaptive mode is enabled.
-            </div>
-        {% endif %}
-    </section>
-
-    <!-- Adaptive-system recommendation -->
-    <section class="flash flash-info">
-        <div>
-            <b>Selected for you:</b>
-            {{ chosen_skill_name }}
-            (difficulty {{ chosen_difficulty }})
-        </div>
-
-        <div class="muted" style="margin-top: 0.25rem;">
-            {{ decision_reason }}
-        </div>
-    </section>
-
-    {% if intervention_message %}
-        <section class="flash flash-warning">
-            <b>Intervention:</b> {{ intervention_message }}
-        </section>
-    {% endif %}
-
-    {% if review_skill_id %}
-        <section class="flash flash-info">
-            <b>Recommended review:</b>
-            {{ review_skill_name }} ({{ review_skill_id }})
-        </section>
-    {% endif %}
-
-    <!-- Technical decision information, hidden by default -->
-    <details>
-        <summary>Decision details</summary>
-
-        <div style="margin-top: 0.5rem;">
-            <div>
-                Risk source:
-                <b>{{ risk_source }}</b>
-            </div>
-
-            <div>
-                Risk raw:
-                <b>{{ risk_raw|fmt3 }}</b>
-            </div>
-
-            <div>
-                Risk used:
-                <b>
-                    {% if not risk_ready %}
-                        Warming up
-                    {% else %}
-                        {{ risk_score_used|fmt3 }}
-                    {% endif %}
-                </b>
-            </div>
-
-            {% if guard_reason %}
-                <div class="flash flash-warning" style="margin-top: 0.4rem;">
-                    {{ guard_reason }}
-                </div>
-            {% endif %}
-        </div>
-    </details>
-
-    <div class="divider"></div>
-
-    <!-- Primary practice actions -->
-    <section class="btn-row" style="margin-bottom: 0.8rem;">
-        <form action="{% url 'learning:generate_question' %}"
-              method="post"
-              style="display: inline;">
-            {% csrf_token %}
-
-            <button type="submit" class="btn btn-primary">
-                Generate question
-            </button>
-        </form>
-
-        <form action="{% url 'learning:end_session' %}"
-              method="post"
-              style="display: inline;">
-            {% csrf_token %}
-
-            <button type="submit" class="btn btn-danger">
-                End session
-            </button>
-        </form>
-
-        <span class="muted" style="align-self: center;">
-            Tip: set a goal, keep Adaptive mode enabled, and generate questions repeatedly.
-        </span>
-    </section>
-
-    <!-- Empty question state -->
-    {% if not current_q %}
-        <section class="flash flash-warning">
-            Click <b>Generate question</b> to begin.
-        </section>
-
-    <!-- Active generated question -->
-    {% else %}
-        <section class="q-card">
-            <div class="card-title">Question</div>
-
-            <div class="q-prompt">
-                {{ current_q.prompt }}
-            </div>
-
-            <div class="muted" style="margin-top: 0.4rem;">
-                {% if llm_used %}
-                    ✨ Enhanced by Groq
                 {% else %}
-                    🧩 Template question (stable demo mode)
+                    <label for="answer">
+                        Your numeric answer
+                    </label>
+
+                    <input
+                        type="text"
+                        id="answer"
+                        name="answer"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        autofocus
+                        required
+                    >
                 {% endif %}
-            </div>
-        </section>
 
-        <!-- Question help actions -->
-        <section class="btn-row" style="margin-bottom: 0.8rem;">
-            <form action="{% url 'learning:request_hint' %}"
-                  method="post"
-                  style="display: inline;">
-                {% csrf_token %}
-
-                <button type="submit" class="btn">
-                    Hint
-                </button>
+                <div style="margin-top: 1rem;">
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Submit answer
+                    </button>
+                </div>
             </form>
 
-            <form action="{% url 'learning:request_explanation' %}"
-                  method="post"
-                  style="display: inline;">
-                {% csrf_token %}
-
-                <button type="submit" class="btn">
-                    Explanation
-                </button>
-            </form>
-        </section>
-
-        <!-- Answer form: keep name="answer" exactly as it is -->
-        <form action="{% url 'learning:submit_answer' %}"
-              method="post"
-              class="card">
-            {% csrf_token %}
-
-            {% if current_q.type == "mcq" and current_q.choices %}
-                <div class="card-title">Choose an answer</div>
-
-                <div class="choices">
-                    {% for choice in current_q.choices %}
-                        <label class="choice-label">
-                            <input type="radio"
-                                   name="answer"
-                                   value="{{ choice }}"
-                                   required>
-
-                            <span>{{ choice }}</span>
-                        </label>
-                    {% endfor %}
+        {% else %}
+            <section class="card"
+                     style="margin-top: 1rem;">
+                <div class="card-title">
+                    Ready for the next question?
                 </div>
 
-            {% else %}
-                <label for="answer">Your answer</label>
+                <p class="muted">
+                    The adaptive engine will use your mastery state
+                    and previous attempts to choose a suitable task.
+                </p>
 
-                <input type="text"
-                       id="answer"
-                       name="answer"
-                       autocomplete="off"
-                       autofocus
-                       required>
-            {% endif %}
+                <form action="{% url 'learning:generate_question' %}"
+                      method="post">
+                    {% csrf_token %}
 
-            <div style="margin-top: 0.8rem;">
-                <button type="submit" class="btn btn-primary">
-                    Submit answer
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Select next question
+                    </button>
+                </form>
+            </section>
+        {% endif %}
+
+        <section class="btn-row"
+                 style="margin-top: 1rem;">
+            <form action="{% url 'learning:new_session' %}"
+                  method="post">
+                {% csrf_token %}
+
+                <button type="submit" class="btn">
+                    Start new session
                 </button>
-            </div>
-        </form>
+            </form>
+
+            <form action="{% url 'learning:end_session' %}"
+                  method="post">
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    End session
+                </button>
+            </form>
+        </section>
+
+        {% if current_item %}
+            <details style="margin-top: 1rem;">
+                <summary>Selection details</summary>
+
+                <div style="margin-top: 0.5rem;">
+                    <p>
+                        <strong>Problem type:</strong>
+                        {{ current_item.problem_type }}
+                    </p>
+
+                    <p>
+                        <strong>Answer type:</strong>
+                        {{ current_item.answer_type }}
+                    </p>
+
+                    <p>
+                        <strong>BKT parameters:</strong>
+                        {{ bkt_source }}
+                    </p>
+
+                    {% if knowledge_state %}
+                        <p>
+                            <strong>Evidence count:</strong>
+                            {{ knowledge_state.evidence_count }}
+                        </p>
+                    {% endif %}
+                </div>
+            </details>
+        {% endif %}
     {% endif %}
 
 </div>

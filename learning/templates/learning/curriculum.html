@@ -1,111 +1,301 @@
 {% extends "learning/base.html" %}
 {% load uchko_extras %}
 
-{% block title %}Uchko — Curriculum{% endblock %}
+{% block title %}Curriculum — Uchko{% endblock %}
 
 {% block content %}
 <div class="curriculum-page">
 
-    <!-- Page heading -->
     <section class="page-heading">
         <div>
             <h2>Curriculum</h2>
+
             <p class="muted">
-                Explore the learning path, skill dependencies, and your current mastery.
+                Explore the course skills, available learning
+                items, and your current mastery estimates.
             </p>
         </div>
 
-        <a href="{% url 'learning:practice' %}" class="btn btn-primary">
+        <a href="{% url 'learning:practice' %}"
+           class="btn btn-primary">
             Continue practice
         </a>
     </section>
 
-    <!-- Curriculum graph -->
-    <section class="card curriculum-map-card">
-        <div class="card-title">Curriculum map</div>
-
-        <p class="muted">
-            The map shows prerequisite relationships between skills, together with the current mastery overlay.
-        </p>
-
-        <div class="curriculum-graph-wrap">
-            <img src="{% url 'learning:curriculum_graph' %}?t={{ session_id }}"
-                 alt="Curriculum graph showing skills and prerequisite relationships"
-                 class="curriculum-graph">
-        </div>
-    </section>
-
-    <!-- Skill selection and prerequisite information -->
-    <section class="row curriculum-details">
-
-        <div>
-            <div class="card card-tight">
-                <div class="card-title">Explore a skill</div>
-
-                <form action="{% url 'learning:curriculum' %}" method="get">
-                    <label for="skill">Select a skill</label>
-
-                    <div class="form-row">
-                        <select id="skill"
-                                name="skill"
-                                class="grow-2"
-                                onchange="this.form.submit()">
-                            {% for opt in skill_options %}
-                                <option value="{{ opt.id }}"
-                                    {% if opt.id == selected_skill_id %}selected{% endif %}>
-                                    {{ opt.label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-
-                        <button type="submit" class="btn">
-                            Show
-                        </button>
-                    </div>
-                </form>
+    {% if setup_error %}
+        <section class="card">
+            <div class="card-title">
+                Curriculum is not available
             </div>
-        </div>
 
-        <div>
-            <div class="card">
-                <div class="card-title">
-                    Prerequisites for {{ selected_skill_name }}
+            <p>{{ setup_error }}</p>
+        </section>
+
+    {% else %}
+        <section class="card">
+            <div class="card-title">
+                {{ course.code }} — {{ course.name }}
+            </div>
+
+            <p class="muted">
+                Curriculum content is imported from
+                FoundationalASSIST. Mastery is initialized using
+                the trained BKT model and updated through practice.
+            </p>
+        </section>
+
+        <section class="row-3"
+                 style="margin-top: 1rem;">
+            <div class="card card-tight">
+                <div class="muted">
+                    Curriculum skills
                 </div>
 
-                <div class="muted" style="margin-bottom: 0.7rem;">
-                    These skills are recommended before progressing to this topic.
+                <div class="summary-value">
+                    {{ skill_count }}
                 </div>
 
-                {% if prereq_rows %}
-                    <div class="prerequisite-list">
-                        {% for p in prereq_rows %}
-                            <div class="prerequisite-item">
-                                <div>
-                                    <div class="prerequisite-name">
-                                        {{ p.name }}
+                <div class="muted">
+                    Distinct knowledge components
+                </div>
+            </div>
+
+            <div class="card card-tight">
+                <div class="muted">
+                    Imported questions
+                </div>
+
+                <div class="summary-value">
+                    {{ total_item_count }}
+                </div>
+
+                <div class="muted">
+                    All available dataset items
+                </div>
+            </div>
+
+            <div class="card card-tight">
+                <div class="muted">
+                    Supported questions
+                </div>
+
+                <div class="summary-value">
+                    {{ supported_item_count }}
+                </div>
+
+                <div class="muted">
+                    Numeric and single-choice questions
+                </div>
+            </div>
+        </section>
+
+        {% if selected_row %}
+            <section class="row"
+                     style="margin-top: 1rem;">
+                <div>
+                    <div class="card card-tight">
+                        <div class="card-title">
+                            Explore a skill
+                        </div>
+
+                        <form action="{% url 'learning:curriculum' %}"
+                              method="get">
+                            <label for="skill">
+                                Select a curriculum skill
+                            </label>
+
+                            <div class="form-row">
+                                <select id="skill"
+                                        name="skill"
+                                        class="grow-2"
+                                        onchange="this.form.submit()">
+                                    {% for row in curriculum_rows %}
+                                        <option
+                                            value="{{ row.skill_id }}"
+                                            {% if row.skill_id == selected_row.skill_id %}selected{% endif %}
+                                        >
+                                            {{ row.skill_id }} —
+                                            {{ row.skill_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+
+                                <button type="submit"
+                                        class="btn">
+                                    Show
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card">
+                        <div class="card-title">
+                            {{ selected_row.skill_name }}
+                        </div>
+
+                        <p>
+                            <code>
+                                {{ selected_row.skill_id }}
+                            </code>
+                        </p>
+
+                        {% if selected_row.description %}
+                            <p>
+                                {{ selected_row.description }}
+                            </p>
+                        {% endif %}
+
+                        <div class="metric">
+                            <span class="label">
+                                Current mastery
+                            </span>
+
+                            <span class="value">
+                                {{ selected_row.mastery_percentage|fmt2 }}%
+                            </span>
+                        </div>
+
+                        <progress
+                            value="{{ selected_row.mastery_percentage }}"
+                            max="100"
+                            style="width: 100%;
+                                height: 0.75rem;
+                                margin: 0.5rem 0 0.8rem;
+                                accent-color: #4f46e5;">
+                        </progress>
+
+                        <div class="metric">
+                            <span class="label">
+                                Supported questions
+                            </span>
+
+                            <span class="value">
+                                {{ selected_row.supported_item_count }}
+                            </span>
+                        </div>
+
+                        <div class="metric">
+                            <span class="label">
+                                All imported questions
+                            </span>
+
+                            <span class="value">
+                                {{ selected_row.total_item_count }}
+                            </span>
+                        </div>
+
+                        <div class="metric">
+                            <span class="label">
+                                Student attempts
+                            </span>
+
+                            <span class="value">
+                                {{ selected_row.attempt_count }}
+                            </span>
+                        </div>
+
+                        <div class="metric">
+                            <span class="label">
+                                BKT evidence
+                            </span>
+
+                            <span class="value">
+                                {{ selected_row.evidence_count }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+
+        <section class="card"
+                 style="margin-top: 1rem;">
+            <div class="card-title">
+                Complete skill catalogue
+            </div>
+
+            <p class="muted">
+                Skills are ordered by their curriculum code.
+                Select a skill to inspect it in more detail.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Mastery</th>
+                            <th>Questions</th>
+                            <th>Attempts</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for row in curriculum_rows %}
+                            <tr>
+                                <td>
+                                    <div>
+                                        {{ row.skill_name }}
                                     </div>
+
+                                    <code>
+                                        {{ row.skill_id }}
+                                    </code>
+                                </td>
+
+                                <td>
+                                    <div class="bar-row">
+                                        <span class="pct">
+                                            {{ row.mastery_percentage|fmt2 }}%
+                                        </span>
+
+                                        <progress
+                                            value="{{ row.mastery_percentage }}"
+                                            max="100"
+                                            style="flex: 1;
+                                                height: 0.75rem;
+                                                accent-color: #4f46e5;">
+                                        </progress>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {{ row.supported_item_count }}
+                                    supported
 
                                     <div class="muted">
-                                        <code>{{ p.id }}</code>
+                                        {{ row.total_item_count }}
+                                        total
                                     </div>
-                                </div>
+                                </td>
 
-                                <div class="prerequisite-mastery">
-                                    <span class="muted">Mastery</span>
-                                    <b>{{ p.mastery|fmt2 }}</b>
-                                </div>
-                            </div>
+                                <td>
+                                    {{ row.attempt_count }}
+                                </td>
+
+                                <td>
+                                    <a href="{% url 'learning:curriculum' %}?skill={{ row.skill_id|urlencode }}">
+                                        View skill
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5"
+                                    class="muted">
+                                    No curriculum skills are
+                                    available.
+                                </td>
+                            </tr>
                         {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="flash flash-info">
-                        No prerequisites are required for this skill. You can begin practicing it directly.
-                    </div>
-                {% endif %}
+                    </tbody>
+                </table>
             </div>
-        </div>
-
-    </section>
+        </section>
+    {% endif %}
 
 </div>
 {% endblock %}

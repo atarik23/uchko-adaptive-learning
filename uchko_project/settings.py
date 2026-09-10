@@ -1,21 +1,29 @@
 from pathlib import Path
+
 from decouple import config
-import os
-from pathlib import Path
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-#SECRET_KEY = "django-insecure-change-me-in-production-uchko-demo-key-9e8f7a6b5c4d3e2f1"
-SECRET_KEY = config("SECRET_KEY", default="change-me-in-prod")
-DEBUG = config("DEBUG", default=True, cast=bool)
+SECRET_KEY = config(
+    "SECRET_KEY",
+    default="django-insecure-uchko-local-development-only",
+)
 
-#DEBUG = True
+DEBUG = config(
+    "DEBUG",
+    default=True,
+    cast=bool,
+)
 
-#ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
     default="localhost,127.0.0.1",
-    cast=lambda v: [x.strip() for x in v.split(",") if x.strip()]
+    cast=lambda value: [
+        host.strip()
+        for host in value.split(",")
+        if host.strip()
+    ],
 )
 
 INSTALLED_APPS = [
@@ -104,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Sarajevo"
 USE_I18N = True
 USE_TZ = True
 
@@ -113,13 +121,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "learning" / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-UCHKO_REPO_ROOT = BASE_DIR
-UCHKO_EVENTS_PATH = BASE_DIR / "data" / "cache" / "events.parquet"
-UCHKO_USERS_PATH = BASE_DIR / "data" / "cache" / "users.json"
-UCHKO_SKILLS_PATH = BASE_DIR / "data" / "content" / "skills.json"
-UCHKO_TEMPLATES_PATH = BASE_DIR / "data" / "content" / "templates.json"
-UCHKO_SESSION_SUMMARIES_PATH = BASE_DIR / "data" / "cache" / "session_summaries.parquet"
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30

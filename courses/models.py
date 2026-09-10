@@ -250,6 +250,14 @@ class LearningAttempt(models.Model):
         related_name="learning_attempts",
     )
 
+    learning_item = models.ForeignKey(
+        "LearningItem",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="learning_attempts",
+    )
+
     session = models.ForeignKey(
         "LearningSession",
         null=True,
@@ -290,11 +298,19 @@ class LearningAttempt(models.Model):
         default=0,
     )
 
+    saw_answer = models.BooleanField(
+        default=False,
+    )
+
     attempt_number = models.PositiveIntegerField(
         default=1,
     )
 
     is_correct = models.BooleanField()
+
+    answer_is_correct = models.BooleanField(
+        default=False,
+    )
 
     attempted_at = models.DateTimeField()
 
@@ -307,12 +323,55 @@ class LearningAttempt(models.Model):
         super().clean()
 
         if self.enrollment_id and self.knowledge_component_id:
-            if self.enrollment.course_id != self.knowledge_component.course_id:
+            if (
+                self.enrollment.course_id
+                != self.knowledge_component.course_id
+            ):
                 raise ValidationError(
                     {
                         "knowledge_component": (
                             "The knowledge component must belong to the "
                             "same course as the enrollment."
+                        )
+                    }
+                )
+
+        if self.learning_item_id and self.enrollment_id:
+            if (
+                self.learning_item.course_id
+                != self.enrollment.course_id
+            ):
+                raise ValidationError(
+                    {
+                        "learning_item": (
+                            "The learning item must belong to the same "
+                            "course as the enrollment."
+                        )
+                    }
+                )
+
+        if self.learning_item_id and self.knowledge_component_id:
+            item_component_ids = set(
+                self.learning_item
+                .knowledge_components
+                .values_list("id", flat=True)
+            )
+
+            primary_component_id = (
+                self.learning_item.primary_knowledge_component_id
+            )
+
+            if (
+                self.knowledge_component_id
+                != primary_component_id
+                and self.knowledge_component_id
+                not in item_component_ids
+            ):
+                raise ValidationError(
+                    {
+                        "knowledge_component": (
+                            "The attempt knowledge component must be "
+                            "associated with the selected learning item."
                         )
                     }
                 )
@@ -329,6 +388,11 @@ class LearningAttempt(models.Model):
                 )
 
     def save(self, *args, **kwargs):
+        if self.learning_item_id and not self.external_question_id:
+            self.external_question_id = (
+                self.learning_item.external_id
+            )
+
         self.full_clean()
         return super().save(*args, **kwargs)
 
@@ -445,4 +509,131 @@ class LearningSession(models.Model):
             f"{self.enrollment.student.username} — "
             f"{self.enrollment.course.code} — "
             f"{duration} — {self.started_at}"
+        )
+
+
+class LearningItem(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="learning_items",
+    )
+
+    external_id = models.CharField(
+        max_length=200,
+    )
+
+    problem_set_id = models.CharField(
+        max_length=200,
+        blank=True,
+    )
+
+    problem_part = models.IntegerField(
+        null=True,
+        blank=True,
+    )
+
+    problem_type = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    answer_type = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    body = models.TextField()
+
+    fill_in_options = models.JSONField(
+        default=list,
+        blank=True,
+    )
+
+    fill_in_answers = models.JSONField(
+        default=list,
+        blank=True,
+    )
+
+    multiple_choice_options = models.JSONField(
+        default=list,
+        blank=True,
+    )
+
+    multiple_choice_answers = models.JSONField(
+        default=list,
+        blank=True,
+    )
+
+    primary_knowledge_component = models.ForeignKey(
+        KnowledgeComponent,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="primary_learning_items",
+    )
+
+    knowledge_components = models.ManyToManyField(
+        KnowledgeComponent,
+        blank=True,
+        related_name="learning_items",
+    )
+
+    skill_count = models.PositiveIntegerField(
+        default=1,
+    )
+
+    source_dataset = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    source_license = models.CharField(
+        max_length=100,
+        blank=True,
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+    )
+
+    metadata = models.JSONField(
+        default=dict,
+        blank=True,
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["course", "external_id"],
+                name="unique_learning_item_per_course",
+            )
+        ]
+
+    def clean(self):
+        super().clean()
+
+        if (
+            self.primary_knowledge_component_id
+            and self.course_id
+            and self.primary_knowledge_component.course_id
+            != self.course_id
+        ):
+            raise ValidationError(
+                {
+                    "primary_knowledge_component": (
+                        "The primary knowledge component must belong "
+                        "to the same course as the learning item."
+                    )
+                }
+            )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return (
+            f"{self.external_id} — "
+            f"{self.problem_type or 'Learning item'}"
         )

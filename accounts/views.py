@@ -3,8 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods, require_POST
 
-from learning import services as learning_services
-
 from .forms import LoginForm, StudentRegistrationForm
 from .models import User
 
@@ -32,10 +30,6 @@ def register_view(request):
             user = form.save()
             login(request, user)
 
-            learning_services.initialize_authenticated_runtime_state(
-                request
-            )
-
             return redirect_for_user(user)
     else:
         form = StudentRegistrationForm()
@@ -59,12 +53,6 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
 
-            # Only students need the temporary practice runtime state.
-            if user.role == User.Role.STUDENT:
-                learning_services.initialize_authenticated_runtime_state(
-                    request
-                )
-
             return redirect_for_user(user)
     else:
         form = LoginForm(request)
@@ -79,7 +67,6 @@ def login_view(request):
 @require_POST
 @login_required
 def logout_view(request):
-    learning_services.clear_authenticated_runtime_state(request)
     logout(request)
 
     return redirect("accounts:login")
