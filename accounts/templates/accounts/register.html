@@ -1,47 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uchko — Student Registration</title>
-</head>
-<body>
-    <main>
-        <h1>Create a student account</h1>
+{% extends "learning/base.html" %}
 
-        <form method="post">
+{% block title %}Create account — Uchko{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+    <section class="auth-story register-story">
+        <span class="eyebrow">Start your learning journey</span>
+        <h1>Learn at your own pace.</h1>
+        <p>Uchko follows your progress and chooses a useful next step for every practice session.</p>
+        <div class="auth-benefits"><div><span>✓</span> Personalized questions</div><div><span>✓</span> Clear skill progress</div><div><span>✓</span> Helpful hints</div></div>
+    </section>
+    <section class="auth-card register-card">
+        <span class="eyebrow">Join Uchko</span>
+        <h2>Create a student account</h2>
+        <p class="auth-intro">A few details and you’re ready to begin.</p>
+        <form method="post" class="auth-form">
             {% csrf_token %}
-
-            {% if form.non_field_errors %}
-                <div>
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-
+            {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
             {% for field in form %}
-                <div>
+                <div class="auth-field">
                     {{ field.label_tag }}
                     {{ field }}
-
-                    {% if field.help_text %}
-                        <small>{{ field.help_text }}</small>
-                    {% endif %}
-
-                    {% if field.errors %}
-                        <div>
-                            {{ field.errors }}
-                        </div>
-                    {% endif %}
+                    {% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}
+                    {% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}
                 </div>
             {% endfor %}
-
-            <button type="submit">Create account</button>
+            <button type="submit" class="btn btn-primary btn-block">Create my account <span aria-hidden="true">→</span></button>
         </form>
-
-        <p>
-            Already have an account?
-            <a href="{% url 'accounts:login' %}">Login</a>
-        </p>
-    </main>
-</body>
-</html>
+        <p class="auth-switch">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    </section>
+</div>
+{% endblock %}

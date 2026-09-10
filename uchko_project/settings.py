@@ -51,7 +51,7 @@ MIDDLEWARE = [
 ]
 
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "learning:practice"
+LOGIN_REDIRECT_URL = "learning:account"
 LOGOUT_REDIRECT_URL = "accounts:login"
 
 ROOT_URLCONF = "uchko_project.urls"

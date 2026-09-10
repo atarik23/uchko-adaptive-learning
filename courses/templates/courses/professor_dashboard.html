@@ -3,129 +3,46 @@
 {% block title %}Professor Dashboard — Uchko{% endblock %}
 
 {% block content %}
-<section class="card">
-    <div class="card-title">Professor Dashboard</div>
-
-    <p>
-        Welcome,
-        {{ request.user.first_name|default:request.user.username }}.
-    </p>
-</section>
-
-{% if courses %}
-    {% for course in courses %}
-        <section class="card" style="margin-top: 1rem;">
-            <div class="card-title">
-                {{ course.code }} — {{ course.name }}
-            </div>
-
-            {% if course.description %}
-                <p>{{ course.description }}</p>
-            {% endif %}
-
-            <p>
-                <strong>Enrollment code:</strong>
-                <code>{{ course.enrollment_code }}</code>
-            </p>
-
-            <p>
-                <strong>Status:</strong>
-                {% if course.is_active %}
-                    Active
-                {% else %}
-                    Inactive
-                {% endif %}
-            </p>
-
-            <p>
-                <strong>Number of students:</strong>
-                {{ course.student_summaries|length }}
-            </p>
-
-            <h3>Students</h3>
-
-            {% if course.student_summaries %}
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Username</th>
-                                <th>Enrollment</th>
-                                <th>Attempts</th>
-                                <th>Accuracy</th>
-                                <th>Sessions</th>
-                                <th>Last activity</th>
-                                <th>Details</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for enrollment in course.student_summaries %}
-                                <tr>
-                                    <td>
-                                        {% if enrollment.student.first_name or enrollment.student.last_name %}
-                                            {{ enrollment.student.first_name }}
-                                            {{ enrollment.student.last_name }}
-                                        {% else %}
-                                            {{ enrollment.student.username }}
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        {{ enrollment.student.username }}
-                                    </td>
-
-                                    <td>
-                                        {% if enrollment.is_active %}
-                                            Active
-                                        {% else %}
-                                            Inactive
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        {{ enrollment.attempt_count }}
-                                    </td>
-
-                                    <td>
-                                        {% if enrollment.average_accuracy is not None %}
-                                            {% widthratio enrollment.average_accuracy 1 100 %}%
-                                        {% else %}
-                                            No attempts
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        {{ enrollment.session_count }}
-                                    </td>
-
-                                    <td>
-                                        {% if enrollment.last_activity %}
-                                            {{ enrollment.last_activity|date:"d M Y, H:i" }}
-                                        {% else %}
-                                            No activity
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        <a href="{% url 'courses:professor_student_detail' enrollment.id %}">
-                                            View details
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <p>No students are currently enrolled in this course.</p>
-            {% endif %}
-        </section>
-    {% endfor %}
-{% else %}
-    <section class="card" style="margin-top: 1rem;">
-        <p>You do not currently have any courses.</p>
+<div class="professor-experience">
+    <section class="professor-hero">
+        <div><span class="eyebrow">Professor workspace</span><h1>Welcome, {{ request.user.first_name|default:request.user.username }}.</h1><p>Follow student activity and identify where additional support may help.</p></div>
+        <div class="professor-hero-icon" aria-hidden="true">▦</div>
     </section>
-{% endif %}
+
+    {% if courses %}
+        {% for course in courses %}
+            <section class="professor-course-header">
+                <div><span class="eyebrow">Your course</span><h2>{{ course.name }}</h2>{% if course.description %}<p>{{ course.description }}</p>{% endif %}</div>
+                <div class="enrollment-code-box"><span>Enrollment code</span><strong>{{ course.enrollment_code }}</strong><small>Share this code with students</small></div>
+            </section>
+
+            <section class="professor-stat-grid">
+                <article><span class="profile-stat-icon stat-teal">♟</span><div><strong>{{ course.student_summaries|length }}</strong><span>Enrolled students</span></div></article>
+                <article><span class="profile-stat-icon stat-yellow">✦</span><div><strong>{% if course.is_active %}Active{% else %}Inactive{% endif %}</strong><span>Course status</span></div></article>
+            </section>
+
+            <section class="student-roster">
+                <div class="panel-heading"><div><span class="eyebrow">Class overview</span><h2>Your students</h2><p>Select a student to review their learning progress.</p></div></div>
+                {% if course.student_summaries %}
+                    <div class="student-roster-list">
+                        {% for enrollment in course.student_summaries %}
+                            <a class="student-roster-item" href="{% url 'courses:professor_student_detail' enrollment.id %}">
+                                <span class="student-avatar">{{ enrollment.student.username|first|upper }}</span>
+                                <div class="student-identity"><strong>{% if enrollment.student.first_name or enrollment.student.last_name %}{{ enrollment.student.first_name }} {{ enrollment.student.last_name }}{% else %}{{ enrollment.student.username }}{% endif %}</strong><span>@{{ enrollment.student.username }}</span></div>
+                                <div class="student-roster-metric"><span>Attempts</span><strong>{{ enrollment.attempt_count }}</strong></div>
+                                <div class="student-roster-metric"><span>Accuracy</span><strong>{% if enrollment.average_accuracy is not None %}{% widthratio enrollment.average_accuracy 1 100 %}%{% else %}—{% endif %}</strong></div>
+                                <div class="student-roster-metric"><span>Last active</span><strong>{% if enrollment.last_activity %}{{ enrollment.last_activity|date:"d M" }}{% else %}—{% endif %}</strong></div>
+                                <span class="roster-arrow" aria-hidden="true">→</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="friendly-empty">No students have joined this course yet. Share the enrollment code to get started.</div>
+                {% endif %}
+            </section>
+        {% endfor %}
+    {% else %}
+        <section class="empty-state card"><div class="empty-state-icon">▦</div><h2>No courses yet</h2><p>Your assigned courses will appear here.</p></section>
+    {% endif %}
+</div>
 {% endblock %}
