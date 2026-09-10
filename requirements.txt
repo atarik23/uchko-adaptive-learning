@@ -13,3 +13,4 @@ django-filter
 python-decouple
 django-tailwind
 xgboost==3.4.1
+nh3==0.3.7

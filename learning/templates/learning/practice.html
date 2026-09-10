@@ -122,7 +122,7 @@
 
                 <div class="q-prompt"
                      style="margin-top: 1rem;">
-                    {{ current_item.body|safe }}
+                    {{ current_item_body_html|safe }}
                 </div>
             </section>
 
@@ -166,7 +166,7 @@
                                 >
 
                                 <span>
-                                    {{ choice.text|safe }}
+                                    {{ choice.html|safe }}
                                 </span>
                             </label>
                         {% endfor %}

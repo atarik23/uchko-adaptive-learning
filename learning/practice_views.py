@@ -22,6 +22,8 @@ from .adaptive_service import (
     select_next_learning_item,
 )
 
+from .content_sanitizer import sanitize_learning_html
+
 
 CURRENT_ITEM_ID = "adaptive_current_item_id"
 CURRENT_STARTED_AT = "adaptive_current_started_at"
@@ -137,7 +139,7 @@ def _choice_rows(item) -> list[dict]:
     return [
         {
             "index": index,
-            "text": option,
+            "html": sanitize_learning_html(option),
         }
         for index, option in enumerate(
             item.multiple_choice_options
@@ -198,6 +200,11 @@ def practice_view(request):
         "enrollment": enrollment,
         "course": enrollment.course,
         "current_item": current_item,
+        "current_item_body_html": (
+            sanitize_learning_html(current_item.body)
+            if current_item is not None
+            else ""
+        ),
         "current_component": current_component,
         "choice_rows": _choice_rows(
             current_item
