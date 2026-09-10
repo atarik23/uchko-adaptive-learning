@@ -1,52 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enroll in a Course — Uchko</title>
-</head>
-<body>
-    <main>
-        <h1>Enroll in a course</h1>
+{% extends "learning/base.html" %}
 
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
-        {% endif %}
+{% block title %}Join a course — Uchko{% endblock %}
 
-        <form method="post">
+{% block content %}
+<div class="enroll-experience">
+    <section class="enroll-card">
+        <div class="enroll-art" aria-hidden="true"><span>↗</span></div>
+        <span class="eyebrow">One step to go</span>
+        <h1>Join your course.</h1>
+        <p>Your professor will share an enrollment code. Enter it below to unlock your learning space.</p>
+        {% if messages %}{% for message in messages %}<div class="flash {% if message.tags == 'success' %}flash-success{% elif message.tags == 'error' %}flash-error{% else %}flash-info{% endif %}">{{ message }}</div>{% endfor %}{% endif %}
+        <form method="post" class="enroll-form">
             {% csrf_token %}
-
-            {% if form.non_field_errors %}
-                <div>
-                    {{ form.non_field_errors }}
-                </div>
-            {% endif %}
-
+            {% if form.non_field_errors %}<div class="form-error">{{ form.non_field_errors }}</div>{% endif %}
             {% for field in form %}
-                <div>
+                <div class="auth-field">
                     {{ field.label_tag }}
                     {{ field }}
-
-                    {% if field.help_text %}
-                        <small>{{ field.help_text }}</small>
-                    {% endif %}
-
-                    {% if field.errors %}
-                        <div>
-                            {{ field.errors }}
-                        </div>
-                    {% endif %}
+                    {% if field.help_text %}<small class="field-help">{{ field.help_text }}</small>{% endif %}
+                    {% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}
                 </div>
             {% endfor %}
-
-            <button type="submit">Enroll</button>
+            <button type="submit" class="btn btn-primary btn-block">Join course <span aria-hidden="true">→</span></button>
         </form>
-
-        <p>
-            <a href="{% url 'learning:practice' %}">Back to practice</a>
-        </p>
-    </main>
-</body>
-</html>
+        <a class="back-link" href="{% url 'courses:student_dashboard' %}">← Back to My Learning</a>
+    </section>
+</div>
+{% endblock %}

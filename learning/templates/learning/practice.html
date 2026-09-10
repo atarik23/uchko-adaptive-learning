@@ -5,305 +5,163 @@
 
 {% block content %}
 <div class="practice-page">
-
     {% if messages %}
-        {% for message in messages %}
-            <section class="flash
-                {% if message.tags == 'success' %}flash-success
-                {% elif message.tags == 'error' %}flash-error
-                {% elif message.tags == 'warning' %}flash-warning
-                {% else %}flash-info{% endif %}">
-                {{ message }}
-            </section>
-        {% endfor %}
+        <div class="flash-area">
+            {% for message in messages %}
+                <div class="flash {% if message.tags == 'success' %}flash-success{% elif message.tags == 'error' %}flash-error{% elif message.tags == 'warning' %}flash-warning{% else %}flash-info{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
 
     {% if setup_error %}
-        <section class="card">
-            <div class="card-title">
-                Practice is not available
-            </div>
-
+        <section class="empty-state card">
+            <div class="empty-state-icon" aria-hidden="true">↗</div>
+            <h1>Ready to start learning?</h1>
             <p>{{ setup_error }}</p>
-
-            <p class="muted">
-                Enroll in an active course containing imported
-                FoundationalASSIST learning items.
-            </p>
+            <p class="muted">Join an active course first, then return here for personalized practice.</p>
+            <a href="{% url 'courses:enroll' %}" class="btn btn-primary">Join a course</a>
         </section>
-
     {% else %}
-        <section class="card">
-            <div class="card-title">
-                Adaptive practice
+        <section class="practice-hero{% if current_item %} practice-hero-compact{% endif %}">
+            <div>
+                <span class="eyebrow">{{ course.name }}</span>
+                <h1>Let’s make some progress.</h1>
+                <p>Your next question is chosen to keep you challenged, confident, and moving forward.</p>
             </div>
-
-            <p>
-                <strong>Course:</strong>
-                {{ course.code }} — {{ course.name }}
-            </p>
-
-            <p class="muted">
-                Uchko selects questions from your weakest skills
-                and targets a suitable probability of success.
-            </p>
+            <div class="hero-orbit" aria-hidden="true"><span>✦</span></div>
         </section>
 
         {% if last_result %}
-            <section class="card" style="margin-top: 1rem;">
-                <div class="card-title">
-                    Previous answer
+            <section class="result-card {% if last_result.answer_is_correct and last_result.independent_success %}result-success{% elif last_result.answer_is_correct %}result-assisted{% else %}result-error{% endif %}">
+                <div class="result-icon" aria-hidden="true">
+                    {% if last_result.answer_is_correct and last_result.independent_success %}✓{% elif last_result.answer_is_correct %}★{% else %}↻{% endif %}
                 </div>
-
-                {% if last_result.answer_is_correct %}
-                    {% if last_result.independent_success %}
-                        <div class="flash flash-success">
-                            <strong>Correct answer.</strong>
-                            This attempt was completed independently.
-                        </div>
-                    {% else %}
-                        <div class="flash flash-warning">
-                            <strong>Correct answer with assistance.</strong>
-                            A hint or answer assistance was used during this attempt.
-                            Mastery is updated using independent performance, so the
-                            mastery estimate may decrease.
-                        </div>
-                    {% endif %}
-                {% else %}
-                    <div class="flash flash-error">
-                        <strong>The submitted answer was not correct.</strong>
-                    </div>
-                {% endif %}
-
-                <div class="metric" style="margin-top: 0.8rem;">
-                    <span class="label">Answer correctness</span>
-                    <span class="value">
-                        {% if last_result.answer_is_correct %}
-                            Correct
-                        {% else %}
-                            Incorrect
-                        {% endif %}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">Independent success</span>
-                    <span class="value">
+                <div class="result-copy">
+                    {% if last_result.answer_is_correct %}
                         {% if last_result.independent_success %}
-                            Yes
+                            <h2>Great work — that’s correct!</h2>
+                            <p>You solved this one independently.</p>
                         {% else %}
-                            No
+                            <h2>Correct with a little support.</h2>
+                            <p>You reached the right answer after using help. Keep practicing this skill to make it stick.</p>
                         {% endif %}
-                    </span>
+                    {% else %}
+                        <h2>Not quite — keep going!</h2>
+                        <p>Every attempt helps Uchko choose a better next step.</p>
+                    {% endif %}
+                    <div class="result-meta">
+                        <span>{{ last_result.skill_name }}</span>
+                        <span>Skill progress: {{ last_result.previous_mastery|mul:100|fmt2 }}% → {{ last_result.updated_mastery|mul:100|fmt2 }}%</span>
+                    </div>
                 </div>
-
-                <p>
-                    <strong>Skill:</strong>
-                    {{ last_result.skill_name }}
-                    <code>{{ last_result.skill_code }}</code>
-                </p>
-
-                <p>
-                    <strong>Mastery update:</strong>
-                    {{ last_result.previous_mastery|fmt2 }}
-                    →
-                    {{ last_result.updated_mastery|fmt2 }}
-                </p>
-
-                <p class="muted">
-                    Attempt number:
-                    {{ last_result.attempt_number }}
-                </p>
             </section>
         {% endif %}
 
         {% if current_item %}
-            <section class="flash flash-info"
-                     style="margin-top: 1rem;">
-                <div>
-                    <strong>Selected skill:</strong>
-                    {{ current_component.name }}
-                    <code>{{ current_component.external_id }}</code>
+            <section class="learning-focus">
+                <div class="focus-copy">
+                    <span class="eyebrow">Today’s focus</span>
+                    <h2>{{ current_component.name }}</h2>
+                    <p>One focused step toward stronger understanding.</p>
                 </div>
-
-                <div style="margin-top: 0.35rem;">
-                    <strong>Current mastery:</strong>
-                    {{ selection_mastery|fmt2 }}
-                </div>
-
-                <div style="margin-top: 0.35rem;">
-                    <strong>Predicted success:</strong>
-                    {{ success_probability|fmt2 }}
-                </div>
-
-                <div class="muted"
-                     style="margin-top: 0.35rem;">
-                    {{ selection_reason }}
-                </div>
-            </section>
-
-            <section class="q-card"
-                     style="margin-top: 1rem;">
-                <div class="card-title">
-                    Question
-                </div>
-
-                <div class="muted">
-                    Problem ID: {{ current_item.external_id }}
-                </div>
-
-                <div class="q-prompt"
-                     style="margin-top: 1rem;">
-                    {{ current_item_body_html|safe }}
-                </div>
-            </section>
-
-            <section class="btn-row"
-                     style="margin-top: 0.8rem;
-                            margin-bottom: 0.8rem;">
-                <form action="{% url 'learning:request_hint' %}"
-                      method="post">
-                    {% csrf_token %}
-
-                    <button type="submit" class="btn">
-                        Request hint
-                    </button>
-                </form>
-
-                <span class="muted"
-                      style="align-self: center;">
-                    Hints used for this question:
-                    {{ hint_count }}
-                </span>
-            </section>
-
-            <form action="{% url 'learning:submit_answer' %}"
-                  method="post"
-                  class="card">
-                {% csrf_token %}
-
-                {% if choice_rows %}
-                    <div class="card-title">
-                        Choose one answer
+                <div class="focus-progress">
+                    <div class="focus-progress-label">
+                        <span>Your progress</span>
+                        <strong>{{ selection_mastery|mul:100|fmt2 }}%</strong>
                     </div>
+                    <progress value="{{ selection_mastery|mul:100 }}" max="100"></progress>
+                    <span class="challenge-label">Balanced challenge</span>
+                </div>
+            </section>
 
+            <section class="question-card">
+                <div class="question-heading">
+                    <span class="question-number">Question</span>
+                    <span class="question-spark" aria-hidden="true">✦</span>
+                </div>
+                <div class="q-prompt">{{ current_item_body_html|safe }}</div>
+            </section>
+
+            <div class="support-row">
+                <form action="{% url 'learning:request_hint' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-hint"><span aria-hidden="true">☀</span> Give me a hint</button>
+                </form>
+                {% if hint_count %}
+                    <span class="support-note">{{ hint_count }} hint{{ hint_count|pluralize }} used</span>
+                {% else %}
+                    <span class="support-note">Hints are here when you need them.</span>
+                {% endif %}
+            </div>
+
+            <form action="{% url 'learning:submit_answer' %}" method="post" class="answer-card">
+                {% csrf_token %}
+                {% if choice_rows %}
+                    <div class="answer-heading">
+                        <h2>Choose your answer</h2>
+                        <span>Select one option</span>
+                    </div>
                     <div class="choices">
                         {% for choice in choice_rows %}
                             <label class="choice-label">
-                                <input
-                                    type="radio"
-                                    name="answer"
-                                    value="{{ choice.index }}"
-                                    required
-                                >
-
-                                <span>
-                                    {{ choice.html|safe }}
-                                </span>
+                                <input type="radio" name="answer" value="{{ choice.index }}" required>
+                                <span class="choice-marker" aria-hidden="true">{{ forloop.counter }}</span>
+                                <span class="choice-content">{{ choice.html|safe }}</span>
                             </label>
                         {% endfor %}
                     </div>
-
                 {% else %}
-                    <label for="answer">
-                        Your numeric answer
-                    </label>
-
-                    <input
-                        type="text"
-                        id="answer"
-                        name="answer"
-                        inputmode="decimal"
-                        autocomplete="off"
-                        autofocus
-                        required
-                    >
+                    <div class="answer-heading">
+                        <h2>What’s your answer?</h2>
+                        <span>Enter a numeric value</span>
+                    </div>
+                    <label class="sr-only" for="answer">Your numeric answer</label>
+                    <input class="answer-input" type="text" id="answer" name="answer" inputmode="decimal" autocomplete="off" autofocus required placeholder="Type your answer here">
                 {% endif %}
-
-                <div style="margin-top: 1rem;">
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Submit answer
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary submit-answer-btn">Check my answer <span aria-hidden="true">→</span></button>
             </form>
-
         {% else %}
-            <section class="card"
-                     style="margin-top: 1rem;">
-                <div class="card-title">
-                    Ready for the next question?
+            <section class="next-step-card">
+                <div class="next-step-icon" aria-hidden="true">✦</div>
+                <div>
+                    <span class="eyebrow">Personalized for you</span>
+                    <h2>Ready for your next question?</h2>
+                    <p>Uchko will pick a useful next step from the skills that need your attention most.</p>
                 </div>
-
-                <p class="muted">
-                    The adaptive engine will use your mastery state
-                    and previous attempts to choose a suitable task.
-                </p>
-
-                <form action="{% url 'learning:generate_question' %}"
-                      method="post">
+                <form action="{% url 'learning:generate_question' %}" method="post">
                     {% csrf_token %}
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Select next question
-                    </button>
+                    <button type="submit" class="btn btn-primary">Start next question <span aria-hidden="true">→</span></button>
                 </form>
             </section>
         {% endif %}
 
-        <section class="btn-row"
-                 style="margin-top: 1rem;">
-            <form action="{% url 'learning:new_session' %}"
-                  method="post">
-                {% csrf_token %}
-
-                <button type="submit" class="btn">
-                    Start new session
-                </button>
-            </form>
-
-            <form action="{% url 'learning:end_session' %}"
-                  method="post">
-                {% csrf_token %}
-
-                <button type="submit"
-                        class="btn btn-danger">
-                    End session
-                </button>
-            </form>
-        </section>
-
-        {% if current_item %}
-            <details style="margin-top: 1rem;">
-                <summary>Selection details</summary>
-
-                <div style="margin-top: 0.5rem;">
-                    <p>
-                        <strong>Problem type:</strong>
-                        {{ current_item.problem_type }}
-                    </p>
-
-                    <p>
-                        <strong>Answer type:</strong>
-                        {{ current_item.answer_type }}
-                    </p>
-
-                    <p>
-                        <strong>BKT parameters:</strong>
-                        {{ bkt_source }}
-                    </p>
-
-                    {% if knowledge_state %}
-                        <p>
-                            <strong>Evidence count:</strong>
-                            {{ knowledge_state.evidence_count }}
-                        </p>
+        <section class="practice-footer-actions">
+            <details class="learning-details">
+                <summary>Why this question?</summary>
+                <div class="learning-details-grid">
+                    {% if current_item %}
+                        <div><span>Skill</span><strong>{{ current_component.name }}</strong></div>
+                        <div><span>Question type</span><strong>{{ current_item.problem_type }}</strong></div>
+                        <div><span>Estimated challenge</span><strong>{{ success_probability|mul:100|fmt2 }}%</strong></div>
+                        <div><span>Selection</span><strong>{{ selection_reason }}</strong></div>
+                    {% else %}
+                        <p>Uchko uses your previous attempts and current skill progress to choose a suitable next question.</p>
                     {% endif %}
                 </div>
             </details>
-        {% endif %}
+            <div class="session-actions">
+                <form action="{% url 'learning:new_session' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="text-button">Start a fresh session</button>
+                </form>
+                <form action="{% url 'learning:end_session' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="text-button text-button-danger">End session</button>
+                </form>
+            </div>
+        </section>
     {% endif %}
-
 </div>
 {% endblock %}

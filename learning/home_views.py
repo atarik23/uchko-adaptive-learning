@@ -12,4 +12,4 @@ def home_view(request):
             "courses:professor_dashboard"
         )
 
-    return redirect("learning:practice")
+    return redirect("courses:student_dashboard")

@@ -4,370 +4,157 @@
 {% block title %}Progress — Uchko{% endblock %}
 
 {% block content %}
-<div class="progress-page">
-
-    <section class="page-heading">
-        <div>
-            <h2>Learning progress</h2>
-
-            <p class="muted">
-                Review your attempts and estimated mastery
-                across the course.
-            </p>
-        </div>
-
-        <a href="{% url 'learning:practice' %}"
-           class="btn btn-primary">
-            Continue practice
-        </a>
-    </section>
-
+<div class="progress-page progress-experience">
     {% if setup_error %}
-        <section class="card">
-            <div class="card-title">
-                Progress is not available
-            </div>
-
+        <section class="empty-state card">
+            <div class="empty-state-icon" aria-hidden="true">↗</div>
+            <h1>Your progress starts here.</h1>
             <p>{{ setup_error }}</p>
+            <a href="{% url 'courses:enroll' %}" class="btn btn-primary">Join a course</a>
         </section>
-
     {% else %}
-        <section class="card">
-            <div class="card-title">
-                {{ course.code }} — {{ course.name }}
+        <section class="progress-hero">
+            <div>
+                <span class="eyebrow">{{ course.name }}</span>
+                <h1>See how far you’ve come.</h1>
+                <p>Every answer builds a clearer picture of what you know and what to practice next.</p>
             </div>
-
-            <p class="muted">
-                Mastery values are initialized from the trained
-                BKT model and updated after submitted answers.
-            </p>
+            <a href="{% url 'learning:practice' %}" class="btn progress-hero-btn">Keep learning <span aria-hidden="true">→</span></a>
         </section>
 
-        <section class="row-3 progress-summary"
-                 style="margin-top: 1rem;">
-            <div class="card card-tight">
-                <div class="muted">
-                    Questions attempted
+        <section class="progress-stat-grid">
+            <article class="progress-stat stat-attempts">
+                <span class="stat-icon" aria-hidden="true">✦</span>
+                <div>
+                    <span class="stat-label">Questions explored</span>
+                    <strong>{{ total_attempts }}</strong>
+                    <small>Across your learning journey</small>
                 </div>
-
-                <div class="summary-value">
-                    {{ total_attempts }}
+            </article>
+            <article class="progress-stat stat-accuracy">
+                <span class="stat-icon" aria-hidden="true">✓</span>
+                <div>
+                    <span class="stat-label">Answer accuracy</span>
+                    <strong>{{ answer_accuracy|mul:100|fmt2 }}%</strong>
+                    <small>{{ correct_answers }} correct answer{{ correct_answers|pluralize }}</small>
                 </div>
-
-                <div class="muted">
-                    Across all learning sessions
+            </article>
+            <article class="progress-stat stat-mastery">
+                <span class="stat-icon" aria-hidden="true">↗</span>
+                <div>
+                    <span class="stat-label">Average skill progress</span>
+                    <strong>{{ average_mastery|mul:100|fmt2 }}%</strong>
+                    <small>Across {{ skill_count }} available skills</small>
                 </div>
-            </div>
-
-            <div class="card card-tight">
-                <div class="muted">
-                    Answer accuracy
-                </div>
-
-                <div class="summary-value">
-                    {{ answer_accuracy|mul:100|fmt2 }}%
-                </div>
-
-                <div class="muted">
-                    {{ correct_answers }} mathematically
-                    correct answers
-                </div>
-            </div>
-
-            <div class="card card-tight">
-                <div class="muted">
-                    Average mastery
-                </div>
-
-                <div class="summary-value">
-                    {{ average_mastery|mul:100|fmt2 }}%
-                </div>
-
-                <div class="muted">
-                    Across {{ skill_count }} skills
-                </div>
-            </div>
+            </article>
         </section>
 
-        <section class="row"
-                 style="margin-top: 1rem;">
-            <div class="card card-tight">
-                <div class="card-title">
-                    Learning overview
+        <section class="progress-two-column">
+            <article class="progress-panel journey-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="eyebrow">Learning journey</span>
+                        <h2>Your activity</h2>
+                    </div>
+                    <span class="panel-decoration" aria-hidden="true">☀</span>
                 </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Practiced skills
-                    </span>
-
-                    <span class="value">
-                        {{ practiced_skill_count }}
-                        / {{ skill_count }}
-                    </span>
+                <div class="journey-grid">
+                    <div><strong>{{ practiced_skill_count }}</strong><span>Skills practiced</span></div>
+                    <div><strong>{{ mastered_skill_count }}</strong><span>Skills mastered</span></div>
+                    <div><strong>{{ total_sessions }}</strong><span>Learning sessions</span></div>
+                    <div><strong>{{ total_hints }}</strong><span>Hints used</span></div>
                 </div>
+            </article>
 
-                <div class="metric">
-                    <span class="label">
-                        Mastered skills
-                    </span>
+            <article class="progress-panel confidence-panel">
+                <span class="eyebrow">Building confidence</span>
+                <h2>{{ independent_success_rate|mul:100|fmt2 }}%</h2>
+                <p>of your attempts were solved correctly without help.</p>
+                <progress value="{{ independent_success_rate|mul:100 }}" max="100"></progress>
+                <small>{{ independent_successes }} independent success{{ independent_successes|pluralize }}</small>
+            </article>
+        </section>
 
-                    <span class="value">
-                        {{ mastered_skill_count }}
-                        / {{ skill_count }}
-                    </span>
+        <section class="progress-panel skill-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">Your next opportunities</span>
+                    <h2>Skills to strengthen</h2>
+                    <p>Uchko places the skills needing the most attention first.</p>
                 </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Independent successes
-                    </span>
-
-                    <span class="value">
-                        {{ independent_successes }}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Independent success rate
-                    </span>
-
-                    <span class="value">
-                        {{ independent_success_rate|mul:100|fmt2 }}%
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Hints used
-                    </span>
-
-                    <span class="value">
-                        {{ total_hints }}
-                    </span>
-                </div>
+                <a href="{% url 'learning:curriculum' %}" class="btn">Explore all skills</a>
             </div>
 
-            <div class="card card-tight">
-                <div class="card-title">
-                    Session activity
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Total sessions
-                    </span>
-
-                    <span class="value">
-                        {{ total_sessions }}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Active sessions
-                    </span>
-
-                    <span class="value">
-                        {{ active_sessions }}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Average response time
-                    </span>
-
-                    <span class="value">
-                        {% if average_response_time_seconds is not None %}
-                            {{ average_response_time_seconds|fmt2 }}s
-                        {% else %}
-                            —
-                        {% endif %}
-                    </span>
-                </div>
-
-                <p class="muted"
-                   style="margin-top: 0.8rem;">
-                    Independent success means a correct first
-                    attempt completed without a hint or displayed
-                    answer. This matches the outcome used by the
-                    trained model.
-                </p>
+            <div class="skill-progress-list">
+                {% for row in mastery_rows|slice:":8" %}
+                    <article class="skill-progress-item">
+                        <div class="skill-progress-copy">
+                            <strong>{{ row.skill_name }}</strong>
+                            <span>
+                                {% if row.evidence_count %}
+                                    Practiced {{ row.evidence_count }} time{{ row.evidence_count|pluralize }}
+                                {% else %}
+                                    Ready to explore
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="skill-progress-meter">
+                            <div><span>Progress</span><strong>{{ row.mastery_percentage|fmt2 }}%</strong></div>
+                            <progress value="{{ row.mastery_percentage }}" max="100"></progress>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="friendly-empty">Complete a question to begin building your skill map.</div>
+                {% endfor %}
             </div>
         </section>
 
-        <section class="card"
-                 style="margin-top: 1rem;">
-            <div class="card-title">
-                Skill mastery
+        <section class="progress-panel attempts-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="eyebrow">Latest activity</span>
+                    <h2>Recent answers</h2>
+                </div>
             </div>
 
-            <p class="muted">
-                Skills with the lowest estimated mastery are shown
-                first. The mastery threshold is
-                {{ mastery_threshold|mul:100|fmt2 }}%.
-            </p>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Skill</th>
-                            <th>Mastery</th>
-                            <th>Evidence</th>
-                            <th>Last activity</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for row in mastery_rows %}
-                            <tr>
-                                <td>
-                                    <div>
-                                        {{ row.skill_name }}
-                                    </div>
-
-                                    <code>
-                                        {{ row.skill_id }}
-                                    </code>
-                                </td>
-
-                                <td>
-                                    <div class="bar-row">
-                                        <span class="pct">
-                                            {{ row.mastery_percentage|fmt2 }}%
-                                        </span>
-
-                                        <progress
-                                            value="{{ row.mastery_percentage }}"
-                                            max="100"
-                                            style="flex: 1;
-                                                height: 0.75rem;
-                                                accent-color: #4f46e5;">
-                                        </progress>
-                                    </div>
-
-                                    {% if row.is_mastered %}
-                                        <div class="muted">
-                                            Mastery threshold reached
-                                        </div>
-                                    {% endif %}
-                                </td>
-
-                                <td>
-                                    {% if row.evidence_count %}
-                                        {{ row.evidence_count }}
-                                        attempt{{ row.evidence_count|pluralize }}
-                                    {% else %}
-                                        <span class="muted">
-                                            Initial estimate
-                                        </span>
-                                    {% endif %}
-                                </td>
-
-                                <td>
-                                    {% if row.last_attempt_at %}
-                                        {{ row.last_attempt_at|date:"d M Y, H:i" }}
-                                    {% else %}
-                                        <span class="muted">—</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="4"
-                                    class="muted">
-                                    No skills are available for
-                                    this course.
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="recent-answer-list">
+                {% for attempt in recent_attempts|slice:":8" %}
+                    <article class="recent-answer-item">
+                        <span class="answer-status {% if attempt.answer_is_correct %}answer-status-correct{% else %}answer-status-incorrect{% endif %}" aria-hidden="true">
+                            {% if attempt.answer_is_correct %}✓{% else %}×{% endif %}
+                        </span>
+                        <div class="recent-answer-copy">
+                            <strong>{{ attempt.knowledge_component.name }}</strong>
+                            <span>{{ attempt.attempted_at|date:"d M Y, H:i" }}</span>
+                        </div>
+                        <div class="recent-answer-support">
+                            {% if attempt.hint_count %}
+                                <span class="support-pill">Hint used</span>
+                            {% elif attempt.saw_answer %}
+                                <span class="support-pill">Answer viewed</span>
+                            {% else %}
+                                <span class="independent-pill">Independent</span>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="friendly-empty">Your submitted answers will appear here.</div>
+                {% endfor %}
             </div>
         </section>
 
-        <section class="card"
-                 style="margin-top: 1rem;">
-            <div class="card-title">
-                Recent attempts
+        <details class="learning-details progress-details">
+            <summary>More learning statistics</summary>
+            <div class="learning-details-grid">
+                <div><span>Active sessions</span><strong>{{ active_sessions }}</strong></div>
+                <div>
+                    <span>Average response time</span>
+                    <strong>{% if average_response_time_seconds is not None %}{{ average_response_time_seconds|fmt2 }}s{% else %}—{% endif %}</strong>
+                </div>
+                <div><span>Total curriculum skills</span><strong>{{ skill_count }}</strong></div>
+                <div><span>Mastery target</span><strong>{{ mastery_threshold|mul:100|fmt2 }}%</strong></div>
             </div>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Time</th>
-                            <th>Problem</th>
-                            <th>Skill</th>
-                            <th>Result</th>
-                            <th>Support</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for attempt in recent_attempts %}
-                            <tr>
-                                <td>
-                                    {{ attempt.attempted_at|date:"d M Y, H:i" }}
-                                </td>
-
-                                <td>
-                                    {% if attempt.learning_item %}
-                                        {{ attempt.learning_item.external_id }}
-                                    {% else %}
-                                        {{ attempt.external_question_id }}
-                                    {% endif %}
-                                </td>
-
-                                <td>
-                                    <code>
-                                        {{ attempt.knowledge_component.external_id }}
-                                    </code>
-                                </td>
-
-                                <td>
-                                    {% if attempt.answer_is_correct %}
-                                        <span style="color: #15803d;">
-                                            Correct
-                                        </span>
-                                    {% else %}
-                                        <span style="color: #b91c1c;">
-                                            Incorrect
-                                        </span>
-                                    {% endif %}
-                                </td>
-
-                                <td>
-                                    {% if attempt.hint_count %}
-                                        {{ attempt.hint_count }}
-                                        hint{{ attempt.hint_count|pluralize }}
-                                    {% elif attempt.saw_answer %}
-                                        Answer viewed
-                                    {% else %}
-                                        <span class="muted">
-                                            Independent
-                                        </span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="5"
-                                    class="muted">
-                                    No attempts have been recorded
-                                    yet. Complete a question on the
-                                    Practice page to begin.
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+        </details>
     {% endif %}
-
 </div>
 {% endblock %}

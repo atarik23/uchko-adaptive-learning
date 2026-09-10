@@ -15,7 +15,7 @@ def redirect_for_user(user):
     if user.role == User.Role.PROFESSOR:
         return redirect("courses:professor_dashboard")
 
-    return redirect("learning:practice")
+    return redirect("courses:student_dashboard")
 
 
 @require_http_methods(["GET", "POST"])

@@ -1,303 +1,79 @@
 {% extends "learning/base.html" %}
 
-{% block title %}Account & Data — Uchko{% endblock %}
+{% block title %}Profile — Uchko{% endblock %}
 
 {% block content %}
-<div class="settings-page">
-
-    <section class="page-heading">
+<div class="settings-page profile-experience">
+    <section class="profile-hero">
+        <div class="profile-avatar" aria-hidden="true">{{ account_user.username|first|upper }}</div>
         <div>
-            <h2>Account & data</h2>
-
-            <p class="muted">
-                Review your account, course enrollment,
-                learning activity, and data usage.
-            </p>
+            <span class="eyebrow">Your Uchko profile</span>
+            <h1>{% if account_user.first_name %}{{ account_user.first_name }}’s learning space{% else %}Your learning space{% endif %}</h1>
+            <p>Manage your account, course, and learning activity in one place.</p>
         </div>
-
-        <a href="{% url 'learning:practice' %}"
-           class="btn btn-primary">
-            Continue practice
-        </a>
+        <a href="{% url 'learning:practice' %}" class="btn profile-hero-btn">Continue learning <span aria-hidden="true">→</span></a>
     </section>
 
-    <section class="row">
-        <div>
-            <div class="card">
-                <div class="card-title">
-                    Account information
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Username
-                    </span>
-
-                    <span class="value">
-                        {{ account_user.username }}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Full name
-                    </span>
-
-                    <span class="value">
-                        {% if account_user.first_name or account_user.last_name %}
-                            {{ account_user.first_name }}
-                            {{ account_user.last_name }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Email
-                    </span>
-
-                    <span class="value">
-                        {{ account_user.email|default:"—" }}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Account role
-                    </span>
-
-                    <span class="value">
-                        {{ account_user.get_role_display }}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Account created
-                    </span>
-
-                    <span class="value">
-                        {{ account_user.date_joined|date:"d M Y, H:i" }}
-                    </span>
-                </div>
+    <section class="profile-grid">
+        <article class="profile-panel account-panel">
+            <div class="panel-heading"><div><span class="eyebrow">Account</span><h2>Your details</h2></div></div>
+            <div class="profile-detail-list">
+                <div><span>Username</span><strong>{{ account_user.username }}</strong></div>
+                <div><span>Name</span><strong>{% if account_user.first_name or account_user.last_name %}{{ account_user.first_name }} {{ account_user.last_name }}{% else %}Not added{% endif %}</strong></div>
+                <div><span>Email</span><strong>{{ account_user.email|default:"Not added" }}</strong></div>
+                <div><span>Account type</span><strong>{{ account_user.get_role_display }}</strong></div>
             </div>
-        </div>
+        </article>
 
-        <div>
-            <div class="card">
-                <div class="card-title">
-                    Course enrollment
-                </div>
-
-                {% if enrollment %}
-                    <div class="metric">
-                        <span class="label">
-                            Course
-                        </span>
-
-                        <span class="value">
-                            {{ course.code }}
-                        </span>
-                    </div>
-
-                    <div class="metric">
-                        <span class="label">
-                            Course name
-                        </span>
-
-                        <span class="value">
-                            {{ course.name }}
-                        </span>
-                    </div>
-
-                    <div class="metric">
-                        <span class="label">
-                            Enrollment status
-                        </span>
-
-                        <span class="value">
-                            {% if enrollment.is_active %}
-                                Active
-                            {% else %}
-                                Inactive
-                            {% endif %}
-                        </span>
-                    </div>
-
-                    <div class="metric">
-                        <span class="label">
-                            Enrolled
-                        </span>
-
-                        <span class="value">
-                            {{ enrollment.enrolled_at|date:"d M Y, H:i" }}
-                        </span>
-                    </div>
-                {% else %}
-                    <div class="flash flash-warning">
-                        This account is not enrolled in an active
-                        course containing imported learning items.
-                    </div>
-                {% endif %}
-            </div>
-        </div>
+        <article class="profile-panel course-panel">
+            <span class="eyebrow">Current course</span>
+            {% if enrollment %}
+                <h2>{{ course.name }}</h2>
+                <p>{{ course.code }}</p>
+                <div class="active-course-pill"><span></span> Active enrollment</div>
+                <small>Joined {{ enrollment.enrolled_at|date:"d M Y" }}</small>
+            {% else %}
+                <h2>No active course</h2>
+                <p>Join a course to unlock personalized practice.</p>
+                <a href="{% url 'courses:enroll' %}" class="btn btn-primary">Join a course</a>
+            {% endif %}
+        </article>
     </section>
 
-    <section class="row-3"
-             style="margin-top: 1rem;">
-        <div class="card card-tight">
-            <div class="muted">
-                Recorded attempts
-            </div>
-
-            <div class="summary-value">
-                {{ total_attempts }}
-            </div>
-
-            <div class="muted">
-                Submitted answers
-            </div>
-        </div>
-
-        <div class="card card-tight">
-            <div class="muted">
-                Learning sessions
-            </div>
-
-            <div class="summary-value">
-                {{ total_sessions }}
-            </div>
-
-            <div class="muted">
-                Created sessions
-            </div>
-        </div>
-
-        <div class="card card-tight">
-            <div class="muted">
-                Practiced skills
-            </div>
-
-            <div class="summary-value">
-                {{ tracked_skills }}
-            </div>
-
-            <div class="muted">
-                Skills with recorded evidence
-            </div>
-        </div>
+    <section class="profile-stat-grid">
+        <article><span class="profile-stat-icon stat-teal">✦</span><div><strong>{{ total_attempts }}</strong><span>Questions explored</span></div></article>
+        <article><span class="profile-stat-icon stat-yellow">↗</span><div><strong>{{ total_sessions }}</strong><span>Learning sessions</span></div></article>
+        <article><span class="profile-stat-icon stat-blue">▦</span><div><strong>{{ tracked_skills }}</strong><span>Skills practiced</span></div></article>
     </section>
 
-    <section class="row"
-             style="margin-top: 1rem;">
-        <div>
-            <div class="card">
-                <div class="card-title">
-                    Current activity
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Last submitted answer
-                    </span>
-
-                    <span class="value">
-                        {% if last_activity %}
-                            {{ last_activity|date:"d M Y, H:i" }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">
-                        Active session
-                    </span>
-
-                    <span class="value">
-                        {% if active_session %}
-                            Started
-                            {{ active_session.started_at|date:"d M Y, H:i" }}
-                        {% else %}
-                            None
-                        {% endif %}
-                    </span>
-                </div>
-
-                {% if active_session %}
-                    <form action="{% url 'learning:end_session' %}"
-                          method="post"
-                          style="margin-top: 1rem;">
-                        {% csrf_token %}
-
-                        <button type="submit"
-                                class="btn btn-danger">
-                            End active session
-                        </button>
-                    </form>
-                {% endif %}
+    <section class="profile-grid lower-profile-grid">
+        <article class="profile-panel activity-panel">
+            <span class="eyebrow">Learning activity</span>
+            <h2>Your latest session</h2>
+            <div class="profile-detail-list">
+                <div><span>Last answer</span><strong>{% if last_activity %}{{ last_activity|date:"d M Y, H:i" }}{% else %}No answers yet{% endif %}</strong></div>
+                <div><span>Current session</span><strong>{% if active_session %}In progress{% else %}No active session{% endif %}</strong></div>
             </div>
-        </div>
+            {% if active_session %}
+                <form action="{% url 'learning:end_session' %}" method="post">{% csrf_token %}<button type="submit" class="btn btn-danger">End current session</button></form>
+            {% endif %}
+        </article>
 
-        <div>
-            <div class="card">
-                <div class="card-title">
-                    Account security
-                </div>
-
-                <p>
-                    Your account is protected by Django's
-                    password-based authentication system.
-                </p>
-
-                <p class="muted">
-                    Do not share your password. Always log out when
-                    using a shared or public computer.
-                </p>
-
-                <form action="{% url 'accounts:logout' %}"
-                      method="post"
-                      style="margin-top: 1rem;">
-                    {% csrf_token %}
-
-                    <button type="submit"
-                            class="btn">
-                        Log out
-                    </button>
-                </form>
-            </div>
-        </div>
+        <article class="profile-panel safety-panel">
+            <span class="eyebrow">Account safety</span>
+            <h2>Keep your account secure</h2>
+            <p>Your account is protected by password-based authentication. Always log out on shared devices.</p>
+            <form action="{% url 'accounts:logout' %}" method="post">{% csrf_token %}<button type="submit" class="btn">Log out</button></form>
+        </article>
     </section>
 
-    <section class="card"
-             style="margin-top: 1rem;">
-        <div class="card-title">
-            Learning data and privacy
+    <details class="learning-details privacy-details">
+        <summary>How Uchko uses my learning data</summary>
+        <div class="privacy-copy">
+            <p>Uchko stores submitted answers, response times, requested hints, learning sessions, and estimated skill progress.</p>
+            <p>This information personalizes future questions, updates your progress, and gives your professor a learning overview.</p>
+            <p>Protected historical student interactions used to train the models are not stored in this application.</p>
         </div>
-
-        <p>
-            Uchko stores the answers you submit, response time,
-            requested hints, learning sessions, and estimated
-            mastery for each practiced skill.
-        </p>
-
-        <p>
-            These records are used to select suitable questions,
-            update your BKT mastery state, calculate progress, and
-            provide your professor with a learning overview.
-        </p>
-
-        <p class="muted">
-            Course content source:
-            <code>{{ dataset_name }}</code>.
-            The application imports problem and curriculum content;
-            protected historical student interactions are not
-            imported into the application database.
-        </p>
-    </section>
-
+    </details>
 </div>
 {% endblock %}
