@@ -237,7 +237,7 @@ def select_next_learning_item(
         if component is None:
             continue
 
-        if not _has_usable_answer(item):
+        if not has_usable_answer(item):
             continue
 
         features = build_success_prediction_input(
@@ -697,7 +697,7 @@ def _candidate_items(
     return candidates
 
 
-def _has_usable_answer(item: LearningItem) -> bool:
+def has_usable_answer(item: LearningItem) -> bool:
     if (
         item.problem_type == "Fill-in-the-blank(s)"
         and item.answer_type == "Numeric"

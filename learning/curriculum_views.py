@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections import Counter
+
 from django.db.models import Count, Q
 from django.shortcuts import render
 
@@ -7,6 +9,7 @@ from accounts.decorators import student_required
 from courses.models import (
     KnowledgeComponent,
     LearningAttempt,
+    LearningItem,
     StudentKnowledgeState,
 )
 from ml.inference import initial_mastery
@@ -14,6 +17,8 @@ from ml.inference import initial_mastery
 from .adaptive_service import (
     DATASET_NAME,
     get_student_enrollment,
+    has_usable_answer,
+    supported_learning_items,
 )
 
 
@@ -37,49 +42,19 @@ def curriculum_view(request):
         KnowledgeComponent.objects
         .filter(
             course=enrollment.course,
-            primary_learning_items__source_dataset=(
+            learning_items__source_dataset=(
                 DATASET_NAME
             ),
-            primary_learning_items__is_active=True,
+            learning_items__is_active=True,
         )
         .annotate(
             total_item_count=Count(
-                "primary_learning_items",
+                "learning_items",
                 filter=Q(
-                    primary_learning_items__source_dataset=(
+                    learning_items__source_dataset=(
                         DATASET_NAME
                     ),
-                    primary_learning_items__is_active=True,
-                ),
-                distinct=True,
-            ),
-            supported_item_count=Count(
-                "primary_learning_items",
-                filter=(
-                    Q(
-                        primary_learning_items__source_dataset=(
-                            DATASET_NAME
-                        ),
-                        primary_learning_items__is_active=True,
-                        primary_learning_items__problem_type=(
-                            "Fill-in-the-blank(s)"
-                        ),
-                        primary_learning_items__answer_type=(
-                            "Numeric"
-                        ),
-                    )
-                    | Q(
-                        primary_learning_items__source_dataset=(
-                            DATASET_NAME
-                        ),
-                        primary_learning_items__is_active=True,
-                        primary_learning_items__problem_type=(
-                            "Multiple Choice (select 1)"
-                        ),
-                        primary_learning_items__answer_type=(
-                            "Multiple Choice"
-                        ),
-                    )
+                    learning_items__is_active=True,
                 ),
                 distinct=True,
             ),
@@ -87,6 +62,31 @@ def curriculum_view(request):
         .distinct()
         .order_by("external_id")
     )
+
+    candidate_items = list(
+        supported_learning_items(
+            enrollment
+        )
+        .prefetch_related(
+            "knowledge_components"
+        )
+    )
+
+    usable_items = [
+        item
+        for item in candidate_items
+        if has_usable_answer(item)
+    ]
+
+    usable_count_by_component = Counter()
+
+    for item in usable_items:
+        for component in (
+            item.knowledge_components.all()
+        ):
+            usable_count_by_component[
+                component.id
+            ] += 1
 
     existing_states = {
         state.knowledge_component_id: state
@@ -173,7 +173,10 @@ def curriculum_view(request):
                     component.total_item_count
                 ),
                 "supported_item_count": (
-                    component.supported_item_count
+                    usable_count_by_component.get(
+                        component.id,
+                        0,
+                    )
                 ),
             }
         )
@@ -201,14 +204,14 @@ def curriculum_view(request):
     ):
         selected_row = curriculum_rows[0]
 
-    total_item_count = sum(
-        row["total_item_count"]
-        for row in curriculum_rows
-    )
-
-    supported_item_count = sum(
-        row["supported_item_count"]
-        for row in curriculum_rows
+    total_item_count = (
+        LearningItem.objects
+        .filter(
+            course=enrollment.course,
+            source_dataset=DATASET_NAME,
+            is_active=True,
+        )
+        .count()
     )
 
     context = {
@@ -223,8 +226,8 @@ def curriculum_view(request):
         "total_item_count": (
             total_item_count
         ),
-        "supported_item_count": (
-            supported_item_count
+        "supported_item_count": len(
+            usable_items
         ),
     }
 
