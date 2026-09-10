@@ -56,14 +56,46 @@
                 </div>
 
                 {% if last_result.answer_is_correct %}
-                    <div class="flash flash-success">
-                        Correct answer.
-                    </div>
+                    {% if last_result.independent_success %}
+                        <div class="flash flash-success">
+                            <strong>Correct answer.</strong>
+                            This attempt was completed independently.
+                        </div>
+                    {% else %}
+                        <div class="flash flash-warning">
+                            <strong>Correct answer with assistance.</strong>
+                            A hint or answer assistance was used during this attempt.
+                            Mastery is updated using independent performance, so the
+                            mastery estimate may decrease.
+                        </div>
+                    {% endif %}
                 {% else %}
                     <div class="flash flash-error">
-                        The submitted answer was not correct.
+                        <strong>The submitted answer was not correct.</strong>
                     </div>
                 {% endif %}
+
+                <div class="metric" style="margin-top: 0.8rem;">
+                    <span class="label">Answer correctness</span>
+                    <span class="value">
+                        {% if last_result.answer_is_correct %}
+                            Correct
+                        {% else %}
+                            Incorrect
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">Independent success</span>
+                    <span class="value">
+                        {% if last_result.independent_success %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </span>
+                </div>
 
                 <p>
                     <strong>Skill:</strong>

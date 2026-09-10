@@ -141,21 +141,43 @@ def _filter_attribute(
     attribute: str,
     value: str,
 ) -> str | None:
+    value = value.strip()
+
     if tag == "img" and attribute == "src":
+        # Convert protocol-relative ASSISTments URLs:
+        # //resources.assistments.org/... -> https://...
+        if value.startswith("//"):
+            absolute_value = f"https:{value}"
+            parsed = urlparse(absolute_value)
+
+            if (
+                parsed.hostname
+                and parsed.hostname.lower()
+                in ALLOWED_IMAGE_HOSTS
+            ):
+                return absolute_value
+
+            return None
+
+        # Legacy ASSISTments image paths belong to app.assistments.org.
+        if value.startswith("/images/assistments/"):
+            return f"https://app.assistments.org{value}"
+
         parsed = urlparse(value)
 
-        # Keep ordinary relative dataset image paths.
+        # Keep other ordinary relative paths.
         if not parsed.scheme and not parsed.netloc:
             return value
 
-        # Explicitly reject data images, including SVG.
+        # Reject embedded data images, including SVG.
         if parsed.scheme.lower() == "data":
             return None
 
         if (
             parsed.scheme.lower() == "https"
             and parsed.hostname
-            and parsed.hostname.lower() in ALLOWED_IMAGE_HOSTS
+            and parsed.hostname.lower()
+            in ALLOWED_IMAGE_HOSTS
         ):
             return value
 
