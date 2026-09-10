@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import practice_views, views
 
 app_name = "learning"
 
@@ -9,13 +9,13 @@ urlpatterns = [
     path("create-user/", views.create_user_view, name="create_user"),
     path("select-user/", views.select_user_view, name="select_user"),
     path("logout/", views.logout_view, name="logout"),
-    path("new-session/", views.new_session_view, name="new_session"),
-    path("end-session/", views.end_session_view, name="end_session"),
-    path("practice/", views.practice_view, name="practice"),
-    path("practice/generate/", views.generate_question_view, name="generate_question"),
-    path("practice/submit/", views.submit_answer_view, name="submit_answer"),
-    path("practice/hint/", views.request_hint_view, name="request_hint"),
-    path("practice/explanation/", views.request_explanation_view, name="request_explanation"),
+    path("new-session/", practice_views.new_session_view, name="new_session",),
+    path("end-session/", practice_views.end_session_view, name="end_session",),
+    path("practice/", practice_views.practice_view, name="practice",),
+    path("practice/generate/", practice_views.generate_question_view, name="generate_question",),
+    path("practice/submit/", practice_views.submit_answer_view, name="submit_answer",),
+    path("practice/hint/", practice_views.request_hint_view, name="request_hint",),
+    path("practice/explanation/", practice_views.request_explanation_view, name="request_explanation",),
     path("practice/set-goal/", views.set_goal_view, name="set_goal"),
     path("practice/toggle-adaptive/", views.toggle_adaptive_view, name="toggle_adaptive"),
     path("practice/manual/", views.set_manual_view, name="set_manual"),
