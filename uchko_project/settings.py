@@ -122,12 +122,5 @@ STATICFILES_DIRS = [BASE_DIR / "learning" / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-UCHKO_REPO_ROOT = BASE_DIR
-UCHKO_EVENTS_PATH = BASE_DIR / "data" / "cache" / "events.parquet"
-UCHKO_USERS_PATH = BASE_DIR / "data" / "cache" / "users.json"
-UCHKO_SKILLS_PATH = BASE_DIR / "data" / "content" / "skills.json"
-UCHKO_TEMPLATES_PATH = BASE_DIR / "data" / "content" / "templates.json"
-UCHKO_SESSION_SUMMARIES_PATH = BASE_DIR / "data" / "cache" / "session_summaries.parquet"
-
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
