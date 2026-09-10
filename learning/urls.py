@@ -1,6 +1,11 @@
 from django.urls import path
 
-from . import practice_views, progress_views, views
+from . import (
+    curriculum_views,
+    practice_views,
+    progress_views,
+    views,
+)
 
 app_name = "learning"
 
@@ -20,7 +25,7 @@ urlpatterns = [
     path("practice/toggle-adaptive/", views.toggle_adaptive_view, name="toggle_adaptive"),
     path("practice/manual/", views.set_manual_view, name="set_manual"),
     path("progress/", progress_views.progress_view, name="progress",),
-    path("curriculum/", views.curriculum_view, name="curriculum"),
+    path("curriculum/", curriculum_views.curriculum_view, name="curriculum",),
     path("curriculum/graph.png", views.curriculum_graph_view, name="curriculum_graph"),
     path("settings/", views.settings_view, name="settings"),
     path("export/session.csv", views.export_session_csv, name="export_session_csv"),
