@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import practice_views, views
+from . import practice_views, progress_views, views
 
 app_name = "learning"
 
@@ -19,7 +19,7 @@ urlpatterns = [
     path("practice/set-goal/", views.set_goal_view, name="set_goal"),
     path("practice/toggle-adaptive/", views.toggle_adaptive_view, name="toggle_adaptive"),
     path("practice/manual/", views.set_manual_view, name="set_manual"),
-    path("progress/", views.progress_view, name="progress"),
+    path("progress/", progress_views.progress_view, name="progress",),
     path("curriculum/", views.curriculum_view, name="curriculum"),
     path("curriculum/graph.png", views.curriculum_graph_view, name="curriculum_graph"),
     path("settings/", views.settings_view, name="settings"),

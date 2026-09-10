@@ -1,190 +1,370 @@
 {% extends "learning/base.html" %}
 {% load uchko_extras %}
 
-{% block title %}Uchko — Progress{% endblock %}
+{% block title %}Progress — Uchko{% endblock %}
 
 {% block content %}
 <div class="progress-page">
 
-    <!-- Page heading -->
     <section class="page-heading">
         <div>
             <h2>Learning progress</h2>
+
             <p class="muted">
-                Review your current skill mastery, session activity, and risk status.
+                Review your attempts and estimated mastery
+                across the course.
             </p>
         </div>
 
-        <a href="{% url 'learning:practice' %}" class="btn btn-primary">
+        <a href="{% url 'learning:practice' %}"
+           class="btn btn-primary">
             Continue practice
         </a>
     </section>
 
-    <!-- High-level session metrics -->
-    <section class="row-3 progress-summary">
-        <div class="card card-tight">
-            <div class="muted">Questions solved</div>
-            <div class="summary-value">{{ metrics.n_solves }}</div>
-            <div class="muted">During this session</div>
-        </div>
-
-        <div class="card card-tight">
-            <div class="muted">Accuracy</div>
-            <div class="summary-value">{{ metrics.acc|fmt2 }}</div>
-            <div class="muted">Correct-answer rate</div>
-        </div>
-
-        <div class="card card-tight">
-            <div class="muted">Average response time</div>
-            <div class="summary-value">
-                {% if avg_rt_seconds is not None %}
-                    {{ avg_rt_seconds|fmt2 }}s
-                {% else %}
-                    —
-                {% endif %}
+    {% if setup_error %}
+        <section class="card">
+            <div class="card-title">
+                Progress is not available
             </div>
-            <div class="muted">Across submitted answers</div>
-        </div>
-    </section>
 
-    <!-- Skill mastery and side information -->
-    <section class="row">
+            <p>{{ setup_error }}</p>
+        </section>
 
-        <!-- Mastery table -->
-        <div>
-            <div class="card">
-                <div class="card-title">Skill mastery</div>
+    {% else %}
+        <section class="card">
+            <div class="card-title">
+                {{ course.code }} — {{ course.name }}
+            </div>
 
-                <div class="muted" style="margin-bottom: 0.9rem;">
-                    Each bar represents your estimated mastery for that skill.
+            <p class="muted">
+                Mastery values are initialized from the trained
+                BKT model and updated after submitted answers.
+            </p>
+        </section>
+
+        <section class="row-3 progress-summary"
+                 style="margin-top: 1rem;">
+            <div class="card card-tight">
+                <div class="muted">
+                    Questions attempted
                 </div>
 
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Skill ID</th>
-                                <th>Skill</th>
-                                <th>Mastery</th>
-                                <th>Prerequisites</th>
-                            </tr>
-                        </thead>
+                <div class="summary-value">
+                    {{ total_attempts }}
+                </div>
 
-                        <tbody>
-                            {% for r in mastery_rows %}
-                                <tr>
-                                    <td>
-                                        <code>{{ r.skill_id }}</code>
-                                    </td>
-
-                                    <td>{{ r.skill }}</td>
-
-                                    <td>
-                                        <div class="bar-row">
-                                            <span class="pct">
-                                                {{ r.mastery|fmt2 }}
-                                            </span>
-
-                                            <div class="progress-bar" style="flex: 1;">
-                                                <span style="width: {{ r.mastery|mul:100|fmt2 }}%;"></span>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td class="muted">
-                                        {{ r.prerequisites|default:"—" }}
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="4" class="muted">
-                                        No mastery data is available yet. Complete practice questions to begin tracking progress.
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="muted">
+                    Across all learning sessions
                 </div>
             </div>
-        </div>
-
-        <!-- Session and risk cards -->
-        <aside>
 
             <div class="card card-tight">
-                <div class="card-title">Session statistics</div>
+                <div class="muted">
+                    Answer accuracy
+                </div>
 
-                <div class="metric">
-                    <span class="label">Events</span>
-                    <span class="value">{{ metrics.n_events }}</span>
+                <div class="summary-value">
+                    {{ answer_accuracy|mul:100|fmt2 }}%
+                </div>
+
+                <div class="muted">
+                    {{ correct_answers }} mathematically
+                    correct answers
+                </div>
+            </div>
+
+            <div class="card card-tight">
+                <div class="muted">
+                    Average mastery
+                </div>
+
+                <div class="summary-value">
+                    {{ average_mastery|mul:100|fmt2 }}%
+                </div>
+
+                <div class="muted">
+                    Across {{ skill_count }} skills
+                </div>
+            </div>
+        </section>
+
+        <section class="row"
+                 style="margin-top: 1rem;">
+            <div class="card card-tight">
+                <div class="card-title">
+                    Learning overview
                 </div>
 
                 <div class="metric">
-                    <span class="label">Solves</span>
-                    <span class="value">{{ metrics.n_solves }}</span>
-                </div>
+                    <span class="label">
+                        Practiced skills
+                    </span>
 
-                <div class="metric">
-                    <span class="label">Accuracy</span>
-                    <span class="value">{{ metrics.acc|fmt2 }}</span>
-                </div>
-
-                <div class="metric">
-                    <span class="label">Average response time</span>
                     <span class="value">
-                        {% if avg_rt_seconds is not None %}
-                            {{ avg_rt_seconds|fmt2 }}s
+                        {{ practiced_skill_count }}
+                        / {{ skill_count }}
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">
+                        Mastered skills
+                    </span>
+
+                    <span class="value">
+                        {{ mastered_skill_count }}
+                        / {{ skill_count }}
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">
+                        Independent successes
+                    </span>
+
+                    <span class="value">
+                        {{ independent_successes }}
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">
+                        Independent success rate
+                    </span>
+
+                    <span class="value">
+                        {{ independent_success_rate|mul:100|fmt2 }}%
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">
+                        Hints used
+                    </span>
+
+                    <span class="value">
+                        {{ total_hints }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="card card-tight">
+                <div class="card-title">
+                    Session activity
+                </div>
+
+                <div class="metric">
+                    <span class="label">
+                        Total sessions
+                    </span>
+
+                    <span class="value">
+                        {{ total_sessions }}
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">
+                        Active sessions
+                    </span>
+
+                    <span class="value">
+                        {{ active_sessions }}
+                    </span>
+                </div>
+
+                <div class="metric">
+                    <span class="label">
+                        Average response time
+                    </span>
+
+                    <span class="value">
+                        {% if average_response_time_seconds is not None %}
+                            {{ average_response_time_seconds|fmt2 }}s
                         {% else %}
                             —
                         {% endif %}
                     </span>
                 </div>
 
-                <div class="metric">
-                    <span class="label">Hints requested</span>
-                    <span class="value">{{ metrics.hints }}</span>
-                </div>
+                <p class="muted"
+                   style="margin-top: 0.8rem;">
+                    Independent success means a correct first
+                    attempt completed without a hint or displayed
+                    answer. This matches the outcome used by the
+                    trained model.
+                </p>
+            </div>
+        </section>
 
-                <div class="metric">
-                    <span class="label">Explanations requested</span>
-                    <span class="value">{{ metrics.expl }}</span>
-                </div>
+        <section class="card"
+                 style="margin-top: 1rem;">
+            <div class="card-title">
+                Skill mastery
             </div>
 
-            <div class="card card-tight">
-                <div class="card-title">Learning risk</div>
+            <p class="muted">
+                Skills with the lowest estimated mastery are shown
+                first. The mastery threshold is
+                {{ mastery_threshold|mul:100|fmt2 }}%.
+            </p>
 
-                {% if not risk_ready %}
-                    <div class="flash flash-info">
-                        <b>Warming up.</b><br>
-                        The risk model needs {{ min_solves_for_risk }} completed solves.
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Mastery</th>
+                            <th>Evidence</th>
+                            <th>Last activity</th>
+                        </tr>
+                    </thead>
 
-                        <div style="margin-top: 0.35rem;">
-                            Current completed solves: <b>{{ n_solves }}</b>
-                        </div>
-                    </div>
+                    <tbody>
+                        {% for row in mastery_rows %}
+                            <tr>
+                                <td>
+                                    <div>
+                                        {{ row.skill_name }}
+                                    </div>
 
-                {% else %}
-                    <div class="metric">
-                        <span class="label">Smoothed risk score</span>
-                        <span class="value">{{ risk_score_used|fmt2 }}</span>
-                    </div>
+                                    <code>
+                                        {{ row.skill_id }}
+                                    </code>
+                                </td>
 
-                    <div class="muted" style="margin-top: 0.45rem;">
-                        Level: <b>{{ risk_cat|upper }}</b><br>
-                        Source: {{ risk_source }}
-                    </div>
+                                <td>
+                                    <div class="bar-row">
+                                        <span class="pct">
+                                            {{ row.mastery_percentage|fmt2 }}%
+                                        </span>
 
-                    {% if guard_reason %}
-                        <div class="flash flash-warning" style="margin-top: 0.7rem;">
-                            {{ guard_reason }}
-                        </div>
-                    {% endif %}
-                {% endif %}
+                                        <div class="progress-bar"
+                                             style="flex: 1;">
+                                            <span style="width: {{ row.mastery_percentage }}%;"></span>
+                                        </div>
+                                    </div>
+
+                                    {% if row.is_mastered %}
+                                        <div class="muted">
+                                            Mastery threshold reached
+                                        </div>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if row.evidence_count %}
+                                        {{ row.evidence_count }}
+                                        attempt{{ row.evidence_count|pluralize }}
+                                    {% else %}
+                                        <span class="muted">
+                                            Initial estimate
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if row.last_attempt_at %}
+                                        {{ row.last_attempt_at|date:"d M Y, H:i" }}
+                                    {% else %}
+                                        <span class="muted">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4"
+                                    class="muted">
+                                    No skills are available for
+                                    this course.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card"
+                 style="margin-top: 1rem;">
+            <div class="card-title">
+                Recent attempts
             </div>
 
-        </aside>
-    </section>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Problem</th>
+                            <th>Skill</th>
+                            <th>Result</th>
+                            <th>Support</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for attempt in recent_attempts %}
+                            <tr>
+                                <td>
+                                    {{ attempt.attempted_at|date:"d M Y, H:i" }}
+                                </td>
+
+                                <td>
+                                    {% if attempt.learning_item %}
+                                        {{ attempt.learning_item.external_id }}
+                                    {% else %}
+                                        {{ attempt.external_question_id }}
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <code>
+                                        {{ attempt.knowledge_component.external_id }}
+                                    </code>
+                                </td>
+
+                                <td>
+                                    {% if attempt.answer_is_correct %}
+                                        <span style="color: #15803d;">
+                                            Correct
+                                        </span>
+                                    {% else %}
+                                        <span style="color: #b91c1c;">
+                                            Incorrect
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if attempt.hint_count %}
+                                        {{ attempt.hint_count }}
+                                        hint{{ attempt.hint_count|pluralize }}
+                                    {% elif attempt.saw_answer %}
+                                        Answer viewed
+                                    {% else %}
+                                        <span class="muted">
+                                            Independent
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5"
+                                    class="muted">
+                                    No attempts have been recorded
+                                    yet. Complete a question on the
+                                    Practice page to begin.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endif %}
 
 </div>
 {% endblock %}
