@@ -75,3 +75,38 @@ class LearningContentSanitizerTests(SimpleTestCase):
             'src="/resources/example.png"',
             result,
         )
+
+    def test_rewrites_protocol_relative_image_url(self):
+        result = sanitize_learning_html(
+            """
+            <img
+                src="//resources.assistments.org/fetch/C/example.jpeg"
+            >
+            """
+        )
+
+        self.assertIn(
+            (
+                'src="https://resources.assistments.org/'
+                'fetch/C/example.jpeg"'
+            ),
+            result,
+        )
+
+
+    def test_rewrites_legacy_assistments_image_path(self):
+        result = sanitize_learning_html(
+            """
+            <img
+                src="/images/assistments/189043.jpg"
+            >
+            """
+        )
+
+        self.assertIn(
+            (
+                'src="https://app.assistments.org/'
+                'images/assistments/189043.jpg"'
+            ),
+            result,
+    )
