@@ -416,11 +416,12 @@ def record_learning_attempt(
         submitted_answer=submitted_answer,
     )
 
+    # Svako prikazivanje pitanja dozvoljava jednu predaju,
+    # pa je predani odgovor prvi pokušaj tog prikazivanja.
     # Ovo odgovara FoundationalASSIST discrete_score:
-    # tačan prvi pokušaj bez hinta i bez prikazanog odgovora.
+    # tačan odgovor bez prethodnog hinta ili prikazanog odgovora.
     independent_success = bool(
         answer_is_correct
-        and attempt_number == 1
         and hint_count == 0
         and not saw_answer
     )
