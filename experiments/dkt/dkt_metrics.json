@@ -1,0 +1,62 @@
+{
+  "experiment": "compact_gru_dkt",
+  "device": "cpu",
+  "torch_version": "2.14.0+cpu",
+  "configuration": {
+    "random_seed": 42,
+    "embedding_dim": 64,
+    "hidden_dim": 128,
+    "dropout": 0.15,
+    "max_sequence_length": 100,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "weight_decay": 1e-05,
+    "max_epochs": 15,
+    "patience": 3,
+    "gradient_clip": 5.0,
+    "threads": 12
+  },
+  "number_of_skills_including_unknown": 153,
+  "model_parameters": 113881,
+  "validation_students": 750,
+  "test_students": 750,
+  "validation_pairs": 253144,
+  "test_pairs": 253718,
+  "best_epoch": 15,
+  "best_validation_loss": 0.5613137923961128,
+  "validation_evaluation_loss": 0.5613137923961128,
+  "test_evaluation_loss": 0.5541769629709873,
+  "validation": {
+    "roc_auc": 0.755620043047293,
+    "accuracy": 0.7110063837183579,
+    "f1": 0.7827460762914458,
+    "log_loss": 0.5613137752123347,
+    "brier_score": 0.1901278292922994,
+    "rows": 253144
+  },
+  "test": {
+    "roc_auc": 0.7619924408565257,
+    "accuracy": 0.7166815125454244,
+    "f1": 0.7877585366933877,
+    "log_loss": 0.5541769530930313,
+    "brier_score": 0.18722991710686968,
+    "rows": 253718
+  },
+  "history_baseline_matched_test": {
+    "roc_auc": 0.6931548085770383,
+    "accuracy": 0.6731962257309296,
+    "f1": 0.7602350342083499,
+    "log_loss": 0.6072899762905568,
+    "brier_score": 0.20971625092861346,
+    "rows": 253718
+  },
+  "xgboost_matched_test": {
+    "roc_auc": 0.812475532813531,
+    "accuracy": 0.744314553953602,
+    "f1": 0.80596881000664,
+    "log_loss": 0.505771220279081,
+    "brier_score": 0.16920107892027283,
+    "rows": 253718
+  },
+  "note": "Final metrics reconstructed from the saved best checkpoint after post-training comparison initially failed because XGBoost was unavailable."
+}
