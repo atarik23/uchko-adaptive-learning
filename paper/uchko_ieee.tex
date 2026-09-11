@@ -20,7 +20,7 @@
 \usetikzlibrary{arrows.meta,positioning,fit}
 \usepackage[hidelinks]{hyperref}
 
-\title{Uchko: A Hybrid XGBoost and Bayesian Knowledge Tracing Platform for Adaptive Mathematics Practice}
+\title{Uchko: An Adaptive Mathematics Learning Platform with Predictive Modeling and Knowledge Tracing}
 
 \author{
 \ifdefined\ieeeavailable
@@ -42,11 +42,11 @@ Tarik Agi\'{c} and Azra Kuri\'{c}\\
 \maketitle
 
 \begin{abstract}
-Adaptive learning systems must connect predictive models with persistent learner state, curriculum-aligned content, and a usable delivery interface. This paper presents Uchko, a deployable web platform for adaptive middle-school mathematics practice. The system combines two complementary models trained on FoundationalASSIST data: an XGBoost classifier estimates the probability that a learner will independently solve a candidate problem, while Bayesian Knowledge Tracing (BKT) maintains an interpretable mastery probability for each skill. A deterministic selection policy first considers a learner's weakest skills and then favors problems whose predicted success probability is near a 0.65 target. To reduce target leakage and improve generalization to unseen learners, all sequential features use only prior interactions and train, validation, and test partitions are disjoint at the student level. After filtering and metadata joins, the modeling data contain 1,693,947 interactions from 5,000 students. XGBoost achieves 0.8122 ROC AUC, 0.7440 accuracy, and 0.5061 log loss on the held-out test students, compared with 0.6929 ROC AUC and 0.6075 log loss for a history baseline. BKT obtains 0.6850 ROC AUC and remains valuable as a transparent online state estimator. The models are integrated into a Django application with role-based student and professor views, persistent attempts and sessions, curriculum exploration, sanitized imported content, and explicit separation between answer correctness and unaided success. The result demonstrates how a compact hybrid architecture can turn offline educational data mining models into an end-to-end adaptive learning experiment.
+Adaptive learning systems must connect predictive models with persistent learner state, curriculum-aligned content, and a usable delivery interface. This paper presents Uchko, a web platform for adaptive middle-school mathematics practice. The deployed hybrid combines an XGBoost classifier, which estimates the probability of an independently successful response, with Bayesian Knowledge Tracing (BKT), which maintains an interpretable mastery probability for each skill. A deterministic policy favors weak skills and problems whose predicted success is near a 0.65 target. All historical features use only prior interactions, and train, validation, and test partitions are disjoint at the student level. After filtering and metadata joins, the modeling data contain 1,693,947 interactions from 5,000 students. On 253,718 matched next-response test cases, XGBoost achieves 0.8125 ROC AUC, 0.7443 accuracy, and 0.5058 log loss. A compact gated recurrent Deep Knowledge Tracing (DKT) model reaches 0.7620 ROC AUC and 0.5542 log loss, outperforming a history baseline but not XGBoost. This controlled negative result supports retaining the more accurate and operationally simpler boosted-tree predictor. The deployed XGBoost--BKT hybrid is integrated into a Django application with role-based student and professor views, persistent attempts and sessions, curriculum exploration, sanitized imported content, and explicit separation between answer correctness and unaided success. Uchko demonstrates how comparative educational data mining experiments can inform an end-to-end adaptive learning implementation.
 \end{abstract}
 
 \begin{IEEEkeywords}
-adaptive learning, educational data mining, knowledge tracing, XGBoost, student modeling, intelligent tutoring systems
+adaptive learning, educational data mining, knowledge tracing, Deep Knowledge Tracing, XGBoost, student modeling
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -59,6 +59,7 @@ This paper presents Uchko, an end-to-end adaptive mathematics platform created a
 The principal contributions are:
 \begin{itemize}
     \item a leakage-aware student-success model evaluated on entirely unseen learners;
+    \item a controlled comparison between aggregate history, recurrent DKT, BKT, and gradient-boosted prediction under a common student-disjoint split;
     \item a hybrid design in which XGBoost ranks candidate difficulty while skill-specific BKT provides an interpretable, continuously updated mastery state;
     \item a concrete adaptive policy that targets productive challenge and avoids immediately repeating recently shown items;
     \item a persistent, role-aware Django implementation that exposes learning activities to students and aggregate progress to their professor; and
@@ -70,7 +71,7 @@ The goal is not to claim improved learning outcomes from an offline experiment. 
 \subsection{Related Work}
 Research on adaptive educational systems spans intelligent tutoring, learning analytics, and educational data mining. Systematic reviews find substantial technical activity but fewer evaluations that connect model improvements to learners' real challenges and classroom deployment \cite{kabudi2021adaptive,tan2025platforms}. ASSISTments is a particularly relevant foundation because it combines online mathematics practice with immediate feedback and teacher-facing information; a randomized evaluation reported improved student achievement from online mathematics homework using the platform \cite{rochelle2016assistments}. Uchko does not attempt to reproduce that causal claim. It uses a newer ASSISTments-derived dataset to evaluate prediction and to implement a deployable adaptation loop.
 
-Within knowledge tracing, BKT remains influential because its parameters have explicit cognitive interpretations, while DKT and later attentive models capture richer dependencies in student sequences \cite{corbett1994knowledge,piech2015dkt,ghosh2020akt}. Surveys emphasize that comparisons are sensitive to preprocessing, splitting, and model configuration \cite{abdelrahman2023survey}. Uchko therefore prioritizes a reproducible, student-disjoint evaluation and uses deep sequence modeling only as a proposed controlled extension. The distinctive focus of this work is not a novel knowledge-tracing architecture, but the integration of complementary prediction and mastery components into a tested application whose instructional policy is inspectable.
+Within knowledge tracing, BKT remains influential because its parameters have explicit cognitive interpretations, while DKT and later attentive models capture richer dependencies in student sequences \cite{corbett1994knowledge,piech2015dkt,ghosh2020akt}. Surveys emphasize that comparisons are sensitive to preprocessing, splitting, and model configuration \cite{abdelrahman2023survey}. Uchko therefore prioritizes a reproducible, student-disjoint evaluation and includes a controlled DKT experiment rather than assuming that a deep sequence model must be superior. The distinctive focus is not a novel knowledge-tracing architecture, but evidence-based selection and integration of complementary components into a tested application whose instructional policy is inspectable.
 
 \section{Background and Design Rationale}
 \subsection{Complementary Student Models}
@@ -117,10 +118,13 @@ Three success-prediction references were constructed. A global baseline assigns 
 
 BKT parameters are fitted by bounded maximum likelihood. A global parameter vector is learned from all training sequences. A skill receives its own parameters only when the training data contain at least 1,000 interactions from at least 50 students; otherwise, the global vector is recorded as a fallback. This produces 95 skill-specific fits and 57 fallback entries. BKT predictions are generated sequentially, resetting state at student boundaries.
 
+The comparative DKT model follows the recurrent formulation of Piech et al. \cite{piech2015dkt}. Each interaction is encoded as a joint skill-response token and mapped to a 64-dimensional embedding. A single gated recurrent unit with 128 hidden units processes each student's ordered history; a linear output layer predicts correctness for the next observed skill. Sequences are divided into chunks of at most 100 prediction steps with a one-event boundary overlap. The model contains 113,881 parameters and is optimized on CPU with Adam, learning rate $10^{-3}$, batch size 128, dropout 0.15, weight decay $10^{-5}$, and gradient clipping at 5. Training permits 15 epochs with patience three according to validation log loss. The best checkpoint occurs at epoch 15. DKT uses the same student partitions and target as the other predictors; fair model comparison excludes the first response of each test student, for which no prior sequence exists.
+
 Evaluation reports threshold-independent ROC AUC together with accuracy and F1 at a 0.5 threshold. Because the adaptive policy consumes probabilities, log loss and Brier score are also reported. These proper scoring rules penalize poorly calibrated confidence rather than assessing ranking alone \cite{brier1950verification}.
 
 \begin{figure*}[t]
 \centering
+\resizebox{0.98\textwidth}{!}{%
 \begin{tikzpicture}[
 node distance=7mm and 7mm,
 box/.style={draw, rounded corners=2pt, align=center, minimum height=10mm, text width=28mm, fill=blue!4},
@@ -142,16 +146,18 @@ arr/.style={-{Latex[length=2mm]}, thick}
 \draw[arr] (xgb) -- (policy);
 \draw[arr] (bkt) -- (policy);
 \draw[arr] (policy) -- (ui);
-\draw[arr, bend right=25] (ui.south) to node[below, font=\scriptsize]{new evidence} (history.east);
 \end{tikzpicture}
-\caption{Uchko's hybrid adaptive loop. XGBoost predicts candidate success, BKT tracks skill mastery, and a deterministic policy converts both outputs into the next practice activity.}
+}
+\caption{Uchko's hybrid adaptive loop. XGBoost predicts candidate success, BKT tracks skill mastery, and a deterministic policy converts both outputs into the next activity; the resulting response is persisted as new history.}
 \label{fig:architecture}
 \end{figure*}
 
 \section{System Implementation}
 Figure~\ref{fig:architecture} summarizes the implemented loop. Uchko is a server-rendered Django application backed by a relational database. The data model includes users with student or professor roles, courses, enrollments, knowledge components, learning items, learning sessions, attempts, and per-enrollment knowledge states. Database transactions and row locking protect mastery and attempt updates from inconsistent concurrent writes.
 
-At inference time, the application reconstructs the same features used during training from a student's persisted history. The serialized preprocessor and XGBoost model run on CPU even though model fitting used GPU acceleration. Candidate items must have a supported answer and belong to an active course. After submission, answer checking supports tolerance-aware numeric responses and single-choice alternatives.
+The implementation redesigns an earlier single-user Streamlit proof of concept as a persistent multi-user Django system, separating domain services, authorization, storage, and server-rendered presentation. Django authentication stores salted password hashes, CSRF middleware protects state-changing forms, and role- and ownership-aware checks separate student records from professor views. These measures make Uchko a production-oriented research prototype, although use with real learners would still require a dedicated security and privacy review.
+
+At inference time, the application reconstructs the same features used during training from a student's persisted history. The serialized preprocessor and XGBoost model run on CPU even though model fitting used GPU acceleration. Candidate items must have a supported answer and belong to an active course. After submission, answer checking supports tolerance-aware numeric responses and single-choice alternatives. DKT is retained as a reproducible comparison but is not deployed because it is less accurate than XGBoost and would add stateful sequence inference without an empirical benefit.
 
 A critical implementation detail is the separation of \emph{answer correctness} from \emph{independent success}. If the final submitted answer is correct after a hint or after revealing the answer, the interface acknowledges correctness, but the attempt is not treated as independent mastery evidence. BKT is updated using
 \begin{equation}
@@ -163,45 +169,54 @@ The student experience includes a role-aware home page, adaptive practice, progr
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=0.88\textwidth]{figures/uchko_practice.png}
-\caption{The implemented student practice interface exposes the selected skill and progress while keeping model-specific diagnostics outside the primary learning task.}
+\begin{minipage}[t]{0.485\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figures/uchko_practice.png}\\[-1mm]
+\small (a) Student adaptive-practice view
+\end{minipage}\hfill
+\begin{minipage}[t]{0.485\textwidth}
+\centering
+\includegraphics[width=\linewidth]{figures/uchko_professor.png}\\[-1mm]
+\small (b) Professor course dashboard
+\end{minipage}
+\caption{Role-aware Uchko interfaces. Students receive a focused next activity and progress signal, while professors see enrollment-level activity and can open individual progress profiles. The displayed population is synthetic demonstration data.}
 \label{fig:interface}
 \end{figure*}
 
 \section{Results}
-Table~\ref{tab:results} reports held-out student performance. The global validation baseline has an AUC of 0.5 by construction and is omitted from the table for compactness. The linear model reaches 0.7868 AUC and 0.5393 log loss on validation, while validation results for XGBoost are 0.8087 and 0.5113, respectively. This validation advantage motivated selection of XGBoost before final testing.
+Table~\ref{tab:results} reports performance on the 253,718 test cases shared by the history, DKT, and XGBoost evaluations. The first response from each student is omitted because DKT requires a preceding interaction. The global validation baseline has an AUC of 0.5 by construction and is omitted for compactness. The linear model reaches 0.7868 AUC and 0.5393 log loss on validation, while validation results for XGBoost are 0.8087 and 0.5113. This advantage motivated selection of XGBoost before final testing.
 
 \begin{table}[t]
 \centering
-\caption{Performance on 750 held-out test students}
+\caption{Matched performance on 750 held-out test students}
 \label{tab:results}
 \setlength{\tabcolsep}{3.3pt}
 \begin{tabular}{lccccc}
 \toprule
 Model & AUC & Acc. & F1 & Log loss & Brier \\
 \midrule
-History & 0.6929 & 0.6728 & 0.7601 & 0.6075 & 0.2098 \\
-BKT & 0.6850 & 0.6772 & 0.7671 & 0.6105 & 0.2106 \\
-XGBoost & \textbf{0.8122} & \textbf{0.7440} & \textbf{0.8057} & \textbf{0.5061} & \textbf{0.1693} \\
+History & 0.6932 & 0.6732 & 0.7602 & 0.6073 & 0.2097 \\
+DKT & 0.7620 & 0.7167 & 0.7878 & 0.5542 & 0.1872 \\
+XGBoost & \textbf{0.8125} & \textbf{0.7443} & \textbf{0.8060} & \textbf{0.5058} & \textbf{0.1692} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-XGBoost improves AUC by 0.1193 over the history baseline and reduces log loss by approximately 16.7\%. Its Brier score is lower by approximately 19.3\%, indicating that the gain is not limited to thresholded classification. Similar validation and test metrics---0.8087 versus 0.8122 AUC and 0.5113 versus 0.5061 log loss---provide no sign of a large validation-to-test collapse.
+DKT improves AUC by 0.0688 over matched history and reduces log loss by 8.7\%, demonstrating that ordered skill-response sequences contain useful predictive structure. However, XGBoost exceeds DKT by 0.0505 AUC and reduces its log loss by a further 8.7\%. XGBoost improves AUC by 0.1193 over matched history and lowers the Brier score by 19.3\%. Its matched test AUC of 0.8125 is close to the original all-row test estimate of 0.8122, indicating that exclusion of each student's first response does not materially change the conclusion.
 
-BKT does not outperform the history baseline in AUC or probabilistic loss, although its accuracy and F1 are slightly higher at the chosen threshold. This result should not be hidden: under the present feature and split definitions, BKT is not the strongest next-response predictor. Its contribution is instead an interpretable state transition that can be updated after every response and inspected per skill. The hybrid system assigns prediction and state estimation to the models that best support each role.
+BKT, evaluated sequentially on the full held-out test partition, obtains 0.6850 AUC, 0.6772 accuracy, 0.7671 F1, 0.6105 log loss, and 0.2106 Brier score. It does not outperform the history baseline as a next-response predictor. This result should not be hidden: BKT's contribution is instead an interpretable state transition that can be updated after every response and inspected per skill. The deployed hybrid assigns prediction and state estimation to the models that best support each role.
 
 The evaluation also illustrates why accuracy alone is insufficient. The training success prevalence is 0.6141, so an always-positive tendency can produce a superficially substantial F1 score. ROC AUC and proper probability losses more clearly distinguish the models. For the adaptive policy, probability quality is especially relevant because candidate ranking depends directly on distance from the 0.65 target.
 
 \section{Discussion}
-The experiment supports three conclusions. First, prior learner history and problem metadata together contain considerably more predictive information than aggregate history alone. XGBoost benefits from non-linear interactions among sparse item categories, temporal signals, hint histories, and skill-specific performance. Second, student-disjoint partitions offer evidence that the model generalizes to new learner accounts rather than memorizing students seen during training. Third, deploying prediction requires additional design decisions that offline metrics do not resolve. The target probability, recent-item exclusion window, weakest-skill set size, and handling of assistance are transparent policy choices and should eventually be validated through user studies.
+The experiment supports four conclusions. First, prior learner history and problem metadata together contain considerably more predictive information than aggregate history alone. XGBoost benefits from non-linear interactions among sparse item categories, temporal signals, hint histories, and skill-specific performance. Second, DKT's gain over history confirms that a recurrent representation of ordered skill-response events is useful, but deep learning is not automatically the strongest choice: the feature-rich boosted model performs better on every reported metric. Third, student-disjoint partitions offer evidence that the models generalize to new learner accounts rather than memorizing students seen during training. Fourth, deployment requires design decisions that offline metrics do not resolve. The target probability, recent-item exclusion window, weakest-skill set size, and handling of assistance are transparent policy choices that require eventual user-study validation.
 
 The study has limitations. FoundationalASSIST reflects one platform, mathematics curriculum, and historical logging policy. Offline next-response accuracy is not evidence of improved learning, retention, motivation, or fairness. The current split tests unseen students but does not simulate chronological dataset drift. XGBoost can express complex feature interactions, yet individual predictions are less pedagogically transparent than BKT states. The 0.65 success target is a reasonable design heuristic, not an experimentally optimized value. Finally, only numeric and single-choice items with recoverable answers are presently used in practice, reducing content coverage from 3,353 imported items to 2,483 usable items.
 
-A deep sequential model is a natural extension, but it should be evaluated as an experiment rather than assumed to be superior. A compact DKT model can encode each skill-response pair and use a gated recurrent network to predict the next response \cite{piech2015dkt}. For a fair comparison, it must use the same student split, prior-only sequences, target definition, and probability metrics. If it materially improves log loss or AUC, its added complexity must still be weighed against inference cost, cold-start behavior, and interpretability. If it does not improve performance, the negative result would strengthen the case for the current compact hybrid design.
+The DKT result is informative despite not becoming part of the deployed path. It was trained on the same student-disjoint split and evaluated against XGBoost on exactly the same next-response rows, eliminating a common source of misleading comparison. Its lower AUC and higher probabilistic losses do not show that recurrent knowledge tracing is generally ineffective; they show that this compact configuration and interaction representation do not outperform Uchko's engineered prior-history and content features. Larger architectures, longer optimization, and attentive knowledge tracing remain possible extensions, but would require new validation rather than deployment by assumption.
 
 \section{Conclusion}
-Uchko demonstrates an end-to-end path from protected educational interaction data to adaptive web-based practice. On unseen students, XGBoost substantially outperforms an aggregate-history baseline for next-response prediction, while BKT provides a simple and inspectable per-skill state. A deterministic policy combines both signals to focus on weak skills at a controlled level of challenge. Persistent data models, role-based authorization, safe content rendering, and explicit treatment of assisted answers turn the model experiment into a functioning platform rather than an isolated notebook. The remaining research question is educational impact: future work should test whether the policy improves learning and whether its recommendations remain fair, understandable, and useful in authentic classrooms.
+Uchko demonstrates an end-to-end path from protected educational interaction data to adaptive web-based practice. On unseen students, XGBoost substantially outperforms aggregate history and a compact recurrent DKT model for next-response prediction, while BKT provides a simple and inspectable per-skill state. The negative DKT comparison supports retaining the more accurate and simpler deployed predictor instead of selecting a model by architectural novelty. A deterministic policy combines prediction and mastery to focus on weak skills at a controlled level of challenge. Persistent data models, role-based authorization, safe content rendering, and explicit treatment of assisted answers turn the experiment into a functioning platform rather than an isolated notebook. The remaining research question is educational impact: future work should test whether the policy improves learning and whether its recommendations remain fair, understandable, and useful in authentic classrooms.
 
 \ifdefined\ieeeavailable
 \bibliographystyle{IEEEtran}
